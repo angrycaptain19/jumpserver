@@ -36,8 +36,7 @@ class AssetUserWriteSerializer(AuthSerializerMixin, BulkOrgResourceModelSerializ
     def create(self, validated_data):
         if not validated_data.get("name") and validated_data.get("username"):
             validated_data["name"] = validated_data["username"]
-        instance = AssetUserManager.create(**validated_data)
-        return instance
+        return AssetUserManager.create(**validated_data)
 
 
 class AssetUserReadSerializer(AssetUserWriteSerializer):

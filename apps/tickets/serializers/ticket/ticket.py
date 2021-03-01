@@ -48,7 +48,7 @@ class TicketSerializer(OrgResourceModelSerializerMixin):
             action_serializer_classes_mapping = type_serializer_classes_mapping.get(_type)
             if action_serializer_classes_mapping:
                 query_action = self.context['request'].query_params.get('action')
-                action = query_action if query_action else self.context['view'].action
+                action = query_action or self.context['view'].action
                 serializer_class = action_serializer_classes_mapping.get(action)
                 if not serializer_class:
                     serializer_class = action_serializer_classes_mapping.get('default')
@@ -61,11 +61,9 @@ class TicketSerializer(OrgResourceModelSerializerMixin):
             serializer_class = default_serializer
 
         if isinstance(serializer_class, type):
-            serializer = serializer_class()
+            return serializer_class()
         else:
-            serializer = serializer_class
-
-        return serializer
+            return serializer_class
 
 
 class TicketDisplaySerializer(TicketSerializer):

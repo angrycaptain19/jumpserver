@@ -37,10 +37,7 @@ class AuthMixin:
             return user
 
         user_id = self.request.session.get('user_id')
-        if not user_id:
-            user = None
-        else:
-            user = get_object_or_none(User, pk=user_id)
+        user = None if not user_id else get_object_or_none(User, pk=user_id)
         if not user:
             raise errors.SessionEmptyError()
         user.backend = self.request.session.get("auth_backend")
@@ -82,10 +79,7 @@ class AuthMixin:
     def check_user_auth(self, decrypt_passwd=False):
         self.check_is_block()
         request = self.request
-        if hasattr(request, 'data'):
-            data = request.data
-        else:
-            data = request.POST
+        data = request.data if hasattr(request, 'data') else request.POST
         username = data.get('username', '')
         password = data.get('password', '')
         challenge = data.get('challenge', '')
@@ -106,11 +100,8 @@ class AuthMixin:
 
         if not user:
             raise CredentialError(error=errors.reason_password_failed)
-        elif user.is_expired:
+        elif user.is_expired or not user.is_active:
             raise CredentialError(error=errors.reason_user_inactive)
-        elif not user.is_active:
-            raise CredentialError(error=errors.reason_user_inactive)
-
         self._check_password_require_reset_or_not(user)
         self._check_passwd_is_too_simple(user, password)
 
@@ -184,11 +175,7 @@ class AuthMixin:
         from tickets.models import Ticket
         ticket_id = self.request.session.get("auth_ticket_id")
         logger.debug('Login confirm ticket id: {}'.format(ticket_id))
-        if not ticket_id:
-            ticket = None
-        else:
-            ticket = Ticket.all().filter(id=ticket_id).first()
-        return ticket
+        return None if not ticket_id else Ticket.all().filter(id=ticket_id).first()
 
     def get_ticket_or_create(self, confirm_setting):
         ticket = self.get_ticket()
@@ -206,11 +193,7 @@ class AuthMixin:
         elif ticket.action_approve:
             self.request.session["auth_confirm"] = "1"
             return
-        elif ticket.action_reject:
-            raise errors.LoginConfirmOtherError(
-                ticket.id, ticket.get_action_display()
-            )
-        elif ticket.action_close:
+        elif ticket.action_reject or ticket.action_close:
             raise errors.LoginConfirmOtherError(
                 ticket.id, ticket.get_action_display()
             )

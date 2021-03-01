@@ -67,10 +67,7 @@ class DatetimeRangeFilter(filters.BaseFilterBackend):
                 try:
                     field = DateTimeField()
                     value = field.to_internal_value(value)
-                    if i == 0:
-                        lookup = "__gte"
-                    else:
-                        lookup = "__lte"
+                    lookup = "__gte" if i == 0 else "__lte"
                     kwargs[attr+lookup] = value
                 except ValidationError as e:
                     print(e)

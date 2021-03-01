@@ -18,11 +18,11 @@ class GrantedAssetLimitOffsetPagination(LimitOffsetPagination):
             if k not in exclude_query_params and v is not None:
                 return super().get_count(queryset)
         node = getattr(self._view, 'pagination_node', None)
-        if node:
-            logger.debug(f'{self._request.get_full_path()} hit node.assets_amount[{node.assets_amount}]')
-            return node.assets_amount
-        else:
+        if not node:
             return super().get_count(queryset)
+
+        logger.debug(f'{self._request.get_full_path()} hit node.assets_amount[{node.assets_amount}]')
+        return node.assets_amount
 
     def paginate_queryset(self, queryset, request: Request, view=None):
         self._request = request

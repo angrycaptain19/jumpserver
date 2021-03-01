@@ -19,15 +19,18 @@ def migrate_field_meta(tp, old_meta):
         return old_meta
     old_meta_hostname = old_meta.get('hostname')
     old_meta_system_user = old_meta.get('system_user')
-    new_meta = {
+    return {
         'apply_ip_group': old_meta.get('ips', []),
-        'apply_hostname_group': [old_meta_hostname] if old_meta_hostname else [],
-        'apply_system_user_group': [old_meta_system_user] if old_meta_system_user else [],
+        'apply_hostname_group': [old_meta_hostname]
+        if old_meta_hostname
+        else [],
+        'apply_system_user_group': [old_meta_system_user]
+        if old_meta_system_user
+        else [],
         'apply_actions': old_meta.get('actions'),
         'apply_actions_display': [],
         'apply_date_start': old_meta.get('date_start'),
         'apply_date_expired': old_meta.get('date_expired'),
-
         'approve_assets': old_meta.get('confirmed_assets', []),
         'approve_assets_display': [],
         'approve_system_users': old_meta.get('confirmed_system_users', []),
@@ -37,7 +40,6 @@ def migrate_field_meta(tp, old_meta):
         'approve_date_start': old_meta.get('date_start'),
         'approve_date_expired': old_meta.get('date_expired'),
     }
-    return new_meta
 
 
 ACTION_OPEN = 'open'

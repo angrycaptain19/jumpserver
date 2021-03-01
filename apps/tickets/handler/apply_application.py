@@ -21,8 +21,7 @@ class Handler(BaseHandler):
         apply_type = self.ticket.meta.get('apply_type')
         apply_type_display = ApplicationTypeChoices.get_label(apply_type)
         meta_display_values = [apply_category_display, apply_type_display]
-        meta_display = dict(zip(meta_display_fields, meta_display_values))
-        return meta_display
+        return dict(zip(meta_display_fields, meta_display_values))
 
     def _construct_meta_display_of_approve(self):
         meta_display_fields = ['approve_applications_display', 'approve_system_users_display']
@@ -34,8 +33,7 @@ class Handler(BaseHandler):
             approve_applications_display = [str(application) for application in approve_applications]
             approve_system_users_display = [str(system_user) for system_user in system_users]
         meta_display_values = [approve_applications_display, approve_system_users_display]
-        meta_display = dict(zip(meta_display_fields, meta_display_values))
-        return meta_display
+        return dict(zip(meta_display_fields, meta_display_values))
 
     # body
     def _construct_meta_body_of_open(self):
@@ -45,21 +43,26 @@ class Handler(BaseHandler):
         apply_system_user_group = self.ticket.meta.get('apply_system_user_group', [])
         apply_date_start = self.ticket.meta.get('apply_date_start')
         apply_date_expired = self.ticket.meta.get('apply_date_expired')
-        applied_body = '''{}: {},
+        return '''{}: {},
             {}: {},
             {}: {},
             {}: {},
             {}: {},
             {}: {},
         '''.format(
-            _('Applied category'), apply_category_display,
-            _('Applied type'), apply_type_display,
-            _('Applied application group'), apply_application_group,
-            _('Applied system user group'), apply_system_user_group,
-            _('Applied date start'), apply_date_start,
-            _('Applied date expired'), apply_date_expired,
+            _('Applied category'),
+            apply_category_display,
+            _('Applied type'),
+            apply_type_display,
+            _('Applied application group'),
+            apply_application_group,
+            _('Applied system user group'),
+            apply_system_user_group,
+            _('Applied date start'),
+            apply_date_start,
+            _('Applied date expired'),
+            apply_date_expired,
         )
-        return applied_body
 
     def _construct_meta_body_of_approve(self):
         # 审批信息
@@ -67,17 +70,20 @@ class Handler(BaseHandler):
         approve_system_users_display = self.ticket.meta.get('approve_system_users_display', [])
         approve_date_start = self.ticket.meta.get('approve_date_start')
         approve_date_expired = self.ticket.meta.get('approve_date_expired')
-        approved_body = '''{}: {},
+        return '''{}: {},
             {}: {},
             {}: {},
             {}: {},
         '''.format(
-            _('Approved applications'), approve_applications_display,
-            _('Approved system users'), approve_system_users_display,
-            _('Approved date start'), approve_date_start,
-            _('Approved date expired'), approve_date_expired
+            _('Approved applications'),
+            approve_applications_display,
+            _('Approved system users'),
+            approve_system_users_display,
+            _('Approved date start'),
+            approve_date_start,
+            _('Approved date expired'),
+            approve_date_expired,
         )
-        return approved_body
 
     # permission
     def _create_application_permission(self):

@@ -62,18 +62,18 @@ class ReplaceNodesAdminUserApi(generics.UpdateAPIView):
     def update(self, request, *args, **kwargs):
         admin_user = self.get_object()
         serializer = self.serializer_class(data=request.data)
-        if serializer.is_valid():
-            nodes = serializer.validated_data['nodes']
-            assets = []
-            for node in nodes:
-                assets.extend([asset.id for asset in node.get_all_assets()])
-
-            with transaction.atomic():
-                Asset.objects.filter(id__in=assets).update(admin_user=admin_user)
-
-            return Response({"msg": "ok"})
-        else:
+        if not serializer.is_valid():
             return Response({'error': serializer.errors}, status=400)
+
+        nodes = serializer.validated_data['nodes']
+        assets = []
+        for node in nodes:
+            assets.extend([asset.id for asset in node.get_all_assets()])
+
+        with transaction.atomic():
+            Asset.objects.filter(id__in=assets).update(admin_user=admin_user)
+
+        return Response({"msg": "ok"})
 
 
 class AdminUserTestConnectiveApi(generics.RetrieveAPIView):

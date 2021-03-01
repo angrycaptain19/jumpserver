@@ -140,10 +140,9 @@ class UserLoginGuardView(mixins.AuthMixin, RedirectView):
             auth_login(self.request, user)
             self.send_auth_signal(success=True, user=user)
             self.clear_auth_mark()
-            url = redirect_user_first_login_or_index(
+            return redirect_user_first_login_or_index(
                 self.request, self.redirect_field_name
             )
-            return url
 
 
 class UserLoginWaitConfirmView(TemplateView):
@@ -153,10 +152,7 @@ class UserLoginWaitConfirmView(TemplateView):
         from tickets.models import Ticket
         from tickets.const import TICKET_DETAIL_URL
         ticket_id = self.request.session.get("auth_ticket_id")
-        if not ticket_id:
-            ticket = None
-        else:
-            ticket = get_object_or_none(Ticket, pk=ticket_id)
+        ticket = None if not ticket_id else get_object_or_none(Ticket, pk=ticket_id)
         context = super().get_context_data(**kwargs)
         if ticket:
             timestamp_created = datetime.datetime.timestamp(ticket.date_created)
@@ -193,8 +189,7 @@ class UserLogoutView(TemplateView):
             return redirect(backend_logout_url)
 
         auth_logout(request)
-        response = super().get(request, *args, **kwargs)
-        return response
+        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = {

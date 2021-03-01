@@ -50,7 +50,7 @@ def on_openid_create_or_update_user(sender, request, user, created, name, userna
         )
         user.source = User.Source.openid.value
         user.save()
-    elif not created and settings.AUTH_OPENID_ALWAYS_UPDATE_USER:
+    elif settings.AUTH_OPENID_ALWAYS_UPDATE_USER:
         logger.debug(
             "Receive OpenID user updated signal: {}, "
             "Update user info: {}"

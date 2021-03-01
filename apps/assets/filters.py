@@ -104,9 +104,8 @@ class LabelFilterBackend(filters.BaseFilterBackend):
                 q = Q(name=key, value=value)
         if not q:
             return []
-        labels = Label.objects.filter(q, is_active=True)\
+        return Label.objects.filter(q, is_active=True)\
             .values_list('id', flat=True)
-        return labels
 
     def filter_queryset(self, request, queryset, view):
         labels = self.get_query_labels(request)

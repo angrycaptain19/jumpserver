@@ -69,15 +69,13 @@ class LDAPAuthorizationBackend(LDAPBackend):
         if not hasattr(user, 'ldap_user') and self.settings.AUTHORIZE_ALL_USERS:
             LDAPUser(self, user=user)  # This sets user.ldap_user
         if hasattr(user, 'ldap_user'):
-            permissions = user.ldap_user.get_group_permissions()
+            return user.ldap_user.get_group_permissions()
         else:
-            permissions = set()
-        return permissions
+            return set()
 
     def populate_user(self, username):
         ldap_user = LDAPUser(self, username=username)
-        user = ldap_user.populate_user()
-        return user
+        return ldap_user.populate_user()
 
 
 class LDAPUser(_LDAPUser):
@@ -85,8 +83,7 @@ class LDAPUser(_LDAPUser):
     def _search_for_user_dn_from_ldap_util(self):
         from settings.utils import LDAPServerUtil
         util = LDAPServerUtil()
-        user_dn = util.search_for_user_dn(self._username)
-        return user_dn
+        return util.search_for_user_dn(self._username)
 
     def _search_for_user_dn(self):
         """

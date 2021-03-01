@@ -118,7 +118,7 @@ def send_command_execution_alert_mail(command):
     input = input.replace('\n', '<br>')
     recipient_list = settings.SECURITY_INSECURE_COMMAND_EMAIL_RECEIVER.split(',')
 
-    assets = ', '.join([str(asset) for asset in command['assets']])
+    assets = ', '.join(str(asset) for asset in command['assets'])
     message = _("""
         <br>
         Assets: %(assets)s

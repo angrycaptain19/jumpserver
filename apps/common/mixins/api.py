@@ -75,11 +75,10 @@ class ExtraFilterFieldsMixin:
     def get_filter_backends(self):
         if self.filter_backends != self.__class__.filter_backends:
             return self.filter_backends
-        backends = list(chain(
+        return list(chain(
             self.filter_backends,
             self.default_added_filters,
             self.extra_filter_backends))
-        return backends
 
     def filter_queryset(self, queryset):
         for backend in self.get_filter_backends():
@@ -144,45 +143,39 @@ class AsyncApiMixin(InterceptMixin):
         method = self.request.method
         path = self.get_request_md5()
         user = self.get_request_user_id()
-        key = '{}_{}_{}'.format(method, path, user)
-        return key
+        return '{}_{}_{}'.format(method, path, user)
 
     def get_request_md5(self):
         path = self.request.path
         query = {k: v for k, v in self.request.GET.items()}
         query.pop("_", None)
         query.pop('refresh', None)
-        query = "&".join(["{}={}".format(k, v) for k, v in query.items()])
+        query = "&".join("{}={}".format(k, v) for k, v in query.items())
         full_path = "{}?{}".format(path, query)
         return md5(full_path.encode()).hexdigest()
 
     @lazyproperty
     def initial_data(self):
-        data = {
+        return {
             "status": "running",
             "start_time": time.time(),
             "key": self.async_cache_key,
         }
-        return data
 
     def get_cache_data(self):
         key = self.async_cache_key
         if self.is_need_refresh():
             cache.delete(key)
             return None
-        data = cache.get(key)
-        return data
+        return cache.get(key)
 
     def do(self, handler, *args, **kwargs):
         if not self.is_need_async():
             return handler(*args, **kwargs)
-        resp = self.do_async(handler, *args, **kwargs)
-        return resp
+        return self.do_async(handler, *args, **kwargs)
 
     def is_need_refresh(self):
-        if self.request.GET.get("refresh"):
-            return True
-        return False
+        return bool(self.request.GET.get("refresh"))
 
     def is_need_async(self):
         return False

@@ -130,9 +130,8 @@ def get_login_backend(request):
     backend = backend.rsplit('.', maxsplit=1)[-1]
     if backend in LOGIN_BACKEND:
         return LOGIN_BACKEND[backend]
-    else:
-        logger.warn(f'LOGIN_BACKEND_NOT_FOUND: {backend}')
-        return ''
+    logger.warn(f'LOGIN_BACKEND_NOT_FOUND: {backend}')
+    return ''
 
 
 def generate_data(username, request):
@@ -143,7 +142,7 @@ def generate_data(username, request):
     else:
         login_type = 'W'
 
-    data = {
+    return {
         'username': username,
         'ip': login_ip,
         'type': login_type,
@@ -151,7 +150,6 @@ def generate_data(username, request):
         'datetime': timezone.now(),
         'backend': get_login_backend(request)
     }
-    return data
 
 
 @receiver(post_auth_success)

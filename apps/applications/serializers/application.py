@@ -37,10 +37,9 @@ class ApplicationSerializerMixin(serializers.Serializer):
             serializer_class = default_serializer
 
         if isinstance(serializer_class, type):
-            serializer = serializer_class()
+            return serializer_class()
         else:
-            serializer = serializer_class
-        return serializer
+            return serializer_class
 
 
 class ApplicationSerializer(ApplicationSerializerMixin, BulkOrgResourceModelSerializer):

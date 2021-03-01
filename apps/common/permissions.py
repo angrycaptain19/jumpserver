@@ -104,10 +104,10 @@ class PermissionsMixin(UserPassesTestMixin):
 
     def test_func(self):
         permission_classes = self.get_permissions()
-        for permission_class in permission_classes:
-            if not permission_class().has_permission(self.request, self):
-                return False
-        return True
+        return all(
+            permission_class().has_permission(self.request, self)
+            for permission_class in permission_classes
+        )
 
 
 class UserCanUpdatePassword:
@@ -123,9 +123,7 @@ class UserCanUpdateSSHKey:
 class NeedMFAVerify(permissions.BasePermission):
     def has_permission(self, request, view):
         mfa_verify_time = request.session.get('MFA_VERIFY_TIME', 0)
-        if time.time() - mfa_verify_time < settings.SECURITY_MFA_VERIFY_TTL:
-            return True
-        return False
+        return time.time() - mfa_verify_time < settings.SECURITY_MFA_VERIFY_TTL
 
 
 class CanUpdateDeleteUser(permissions.BasePermission):
@@ -141,17 +139,13 @@ class CanUpdateDeleteUser(permissions.BasePermission):
             return False
         # 超级管理员
         if request.user.is_superuser:
-            if obj.is_superuser and obj.username in ['admin']:
-                return False
-            return True
+            return not obj.is_superuser or obj.username not in ['admin']
         # 组织管理员
         if obj.is_superuser:
             return False
         if obj.is_super_auditor:
             return False
-        if obj.can_admin_current_org:
-            return False
-        return True
+        return not obj.can_admin_current_org
 
     @staticmethod
     def has_update_object_permission(request, view, obj):
@@ -168,9 +162,7 @@ class CanUpdateDeleteUser(permissions.BasePermission):
         # 组织管理员
         if obj.is_superuser:
             return False
-        if obj.is_super_auditor:
-            return False
-        return True
+        return not obj.is_super_auditor
 
     def has_object_permission(self, request, view, obj):
         if request.user.is_anonymous:

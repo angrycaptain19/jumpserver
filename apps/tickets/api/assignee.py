@@ -25,5 +25,4 @@ class AssigneeViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         org = self.get_org()
-        queryset = User.get_super_and_org_admins(org=org)
-        return queryset
+        return User.get_super_and_org_admins(org=org)

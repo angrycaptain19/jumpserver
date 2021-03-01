@@ -137,11 +137,7 @@ def on_org_user_changed_refresh_cache(sender, action, instance, reverse, pk_set,
     if not action.startswith(POST_PREFIX):
         return
 
-    if reverse:
-        orgs = Organization.objects.filter(id__in=pk_set)
-    else:
-        orgs = [instance]
-
+    orgs = Organization.objects.filter(id__in=pk_set) if reverse else [instance]
     for org in orgs:
         org_cache = OrgResourceStatisticsCache(org)
         org_cache.refresh_async('users_amount')

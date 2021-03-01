@@ -34,10 +34,9 @@ class UserDirectGrantedAssetsApi(ListAPIView):
         if getattr(self, 'swagger_fake_view', False):
             return Asset.objects.none()
         user = self.user
-        assets = get_user_direct_granted_assets(user)\
+        return get_user_direct_granted_assets(user)\
             .prefetch_related('platform')\
             .only(*self.only_fields)
-        return assets
 
 
 class UserFavoriteGrantedAssetsApi(ListAPIView):
@@ -50,10 +49,9 @@ class UserFavoriteGrantedAssetsApi(ListAPIView):
         if getattr(self, 'swagger_fake_view', False):
             return Asset.objects.none()
         user = self.user
-        assets = FavoriteAsset.get_user_favorite_assets(user)\
+        return FavoriteAsset.get_user_favorite_assets(user)\
             .prefetch_related('platform')\
             .only(*self.only_fields)
-        return assets
 
 
 class AssetsAsTreeMixin(SerializeToTreeNodeMixin):

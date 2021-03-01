@@ -33,8 +33,7 @@ class QuerySetChain:
 
     @lazyproperty
     def querysets_counts(self):
-        counts = [s.count() for s in self.querysets]
-        return counts
+        return [s.count() for s in self.querysets]
 
     def count(self):
         return self.total_count

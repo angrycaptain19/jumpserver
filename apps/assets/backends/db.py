@@ -135,7 +135,7 @@ class SystemUserBackend(DBBackend):
             self.queryset = self.queryset.filter(asset__nodes__id=node.id)
 
     def get_annotate(self):
-        kwargs = dict(
+        return dict(
             hostname=F("asset__hostname"),
             ip=F("asset__ip"),
             username=F("systemuser__username"),
@@ -154,7 +154,6 @@ class SystemUserBackend(DBBackend):
             org_id=F("asset__org_id"),
             backend=Value(self.backend, CharField())
         )
-        return kwargs
 
     def get_filter(self):
         return dict(

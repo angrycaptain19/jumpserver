@@ -56,10 +56,7 @@ class BaseStorageTestConnectiveMixin:
             is_valid = False
             msg = _("Test failure: {}".format(str(e)))
         else:
-            if is_valid:
-                msg = _("Test successful")
-            else:
-                msg = _("Test failure: Account invalid")
+            msg = _("Test successful") if is_valid else _("Test failure: Account invalid")
         data = {
             'is_valid': is_valid,
             'msg': msg

@@ -48,8 +48,7 @@ def union_queryset(*args, base_queryset=None):
     queryset_id = list(sub_query.values_list('id', flat=True))
     if not base_queryset:
         base_queryset = args[0].model.objects
-    queryset = base_queryset.filter(id__in=queryset_id)
-    return queryset
+    return base_queryset.filter(id__in=queryset_id)
 
 
 def get_log_keep_day(s, defaults=200):

@@ -33,8 +33,7 @@ def test_admin_user_connectivity_util(admin_user, task_name):
     hosts = clean_ansible_task_hosts(assets)
     if not hosts:
         return {}
-    summary = test_asset_connectivity_util(hosts, task_name)
-    return summary
+    return test_asset_connectivity_util(hosts, task_name)
 
 
 @shared_task(queue="ansible")

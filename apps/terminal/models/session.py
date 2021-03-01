@@ -70,10 +70,9 @@ class Session(OrgModelMixin):
     def get_local_path(self, version=2):
         rel_path = self.get_rel_replay_path(version=version)
         if version == 2:
-            local_path = os.path.join(self.upload_to, rel_path)
+            return os.path.join(self.upload_to, rel_path)
         else:
-            local_path = rel_path
-        return local_path
+            return rel_path
 
     @property
     def asset_obj(self):
@@ -95,19 +94,14 @@ class Session(OrgModelMixin):
     def can_replay(self):
         if self.has_replay:
             return True
-        if self.date_start < self._date_start_first_has_replay_rdp_session:
-            return True
-        return False
+        return self.date_start < self._date_start_first_has_replay_rdp_session
 
     @property
     def can_join(self):
         _PROTOCOL = self.PROTOCOL
         if self.is_finished:
             return False
-        if self.protocol in [_PROTOCOL.SSH, _PROTOCOL.TELNET, _PROTOCOL.K8S]:
-            return True
-        else:
-            return False
+        return self.protocol in [_PROTOCOL.SSH, _PROTOCOL.TELNET, _PROTOCOL.K8S]
 
     @property
     def db_protocols(self):
@@ -119,10 +113,7 @@ class Session(OrgModelMixin):
         _PROTOCOL = self.PROTOCOL
         if self.is_finished:
             return False
-        if self.protocol in self.db_protocols:
-            return False
-        else:
-            return True
+        return self.protocol not in self.db_protocols
 
     def save_replay_to_storage(self, f):
         local_path = self.get_local_path()
@@ -170,11 +161,10 @@ class Session(OrgModelMixin):
         org = get_current_org()
         if not org or not org.is_real():
             Organization.default().change_to()
-        i = 0
         users = User.objects.all()[:100]
         assets = Asset.objects.all()[:100]
         system_users = SystemUser.objects.all()[:100]
-        while i < count:
+        for _ in range(0, count, 10):
             user_random = random.choices(users, k=10)
             assets_random = random.choices(assets, k=10)
             system_users = random.choices(system_users, k=10)
@@ -198,7 +188,6 @@ class Session(OrgModelMixin):
                 )
                 sessions.append(Session(**data))
             cls.objects.bulk_create(sessions)
-            i += 10
 
     class Meta:
         db_table = "terminal_session"

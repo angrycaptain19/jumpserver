@@ -86,8 +86,7 @@ class Organization(models.Model):
         from users.models import User
         if self.is_real():
             return self.members.filter(m2m_org_members__role=role)
-        users = User.objects.filter(role=role)
-        return users
+        return User.objects.filter(role=role)
 
     @property
     def users(self):
@@ -121,21 +120,15 @@ class Organization(models.Model):
     def can_admin_by(self, user):
         if user.is_superuser:
             return True
-        if self.admins.filter(id=user.id).exists():
-            return True
-        return False
+        return bool(self.admins.filter(id=user.id).exists())
 
     def can_audit_by(self, user):
         if user.is_super_auditor:
             return True
-        if self.auditors.filter(id=user.id).exists():
-            return True
-        return False
+        return bool(self.auditors.filter(id=user.id).exists())
 
     def can_user_by(self, user):
-        if self.users.filter(id=user.id).exists():
-            return True
-        return False
+        return bool(self.users.filter(id=user.id).exists())
 
     def is_real(self):
         return self.id not in (self.DEFAULT_NAME, self.ROOT_ID, self.SYSTEM_ID)

@@ -25,8 +25,7 @@ class TimezoneMiddleware:
             timezone.activate(tz)
         except pytz.UnknownTimeZoneError:
             pass
-        response = self.get_response(request)
-        return response
+        return self.get_response(request)
 
 
 class DemoMiddleware:
@@ -51,9 +50,7 @@ class DemoMiddleware:
         if self.DEMO_MODE_ENABLED and request.method not in self.SAFE_METHOD \
                 and not self.SAFE_URL_PATTERN.match(request.path):
             return HttpResponse("Demo mode, only safe request accepted", status=403)
-        else:
-            response = self.get_response(request)
-            return response
+        return self.get_response(request)
 
 
 class RequestMiddleware:
@@ -90,5 +87,4 @@ class RefererCheckMiddleware:
         match = self.check_referer(request)
         if not match:
             return HttpResponseForbidden('CSRF CHECK ERROR')
-        response = self.get_response(request)
-        return response
+        return self.get_response(request)

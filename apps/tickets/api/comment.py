@@ -32,5 +32,4 @@ class CommentViewSet(mixins.CreateModelMixin, viewsets.ReadOnlyModelViewSet):
         return context
 
     def get_queryset(self):
-        queryset = self.ticket.comments.all()
-        return queryset
+        return self.ticket.comments.all()

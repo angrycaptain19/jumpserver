@@ -36,8 +36,7 @@ class GetUserAssetPermissionActionsApi(RetrieveAPIView):
 
     def get_user(self):
         user_id = self.request.query_params.get('user_id', '')
-        user = get_object_or_404(User, id=user_id)
-        return user
+        return get_object_or_404(User, id=user_id)
 
     def get_object(self):
         asset_id = self.request.query_params.get('asset_id', '')
@@ -65,8 +64,7 @@ class ValidateUserAssetPermissionApi(APIView):
 
     def get_user(self):
         user_id = self.request.query_params.get('user_id', '')
-        user = get_object_or_404(User, id=user_id)
-        return user
+        return get_object_or_404(User, id=user_id)
 
     def get(self, request, *args, **kwargs):
         asset_id = request.query_params.get('asset_id', '')

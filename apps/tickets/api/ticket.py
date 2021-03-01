@@ -43,8 +43,7 @@ class TicketViewSet(CommonApiMixin, viewsets.ModelViewSet):
         raise MethodNotAllowed(self.action)
 
     def get_queryset(self):
-        queryset = Ticket.get_user_related_tickets(self.request.user)
-        return queryset
+        return Ticket.get_user_related_tickets(self.request.user)
 
     def perform_create(self, serializer):
         instance = serializer.save()

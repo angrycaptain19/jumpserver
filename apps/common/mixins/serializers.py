@@ -133,10 +133,9 @@ class BulkListSerializerMixin(object):
             to_create = [
                 ModelClass(**attrs) for attrs in validated_data
             ]
-            objs = ModelClass._default_manager.bulk_create(
+            return ModelClass._default_manager.bulk_create(
                 to_create, **model_bulk_create_kwargs
             )
-            return objs
         else:
             return super().create(validated_data)
 
@@ -153,9 +152,7 @@ class BaseDynamicFieldsPlugin:
             # The serializer was not initialized with request context.
             return False
 
-        if method != 'GET':
-            return False
-        return True
+        return method == 'GET'
 
     def get_request(self):
         return self.serializer.context['request']
@@ -210,8 +207,7 @@ class SizedModelFieldsMixin(BaseDynamicFieldsPlugin):
     def can_dynamic(self):
         if not hasattr(self.serializer, 'Meta'):
             return False
-        can = super().can_dynamic()
-        return can
+        return super().can_dynamic()
 
     def get_exclude_field_names(self):
         query_params = self.get_query_params()
@@ -224,8 +220,7 @@ class SizedModelFieldsMixin(BaseDynamicFieldsPlugin):
         if not size_fields or not isinstance(size_fields, Iterable):
             return []
         serializer_field_names = set(self.serializer.fields)
-        fields_to_drop = serializer_field_names - set(size_fields)
-        return fields_to_drop
+        return serializer_field_names - set(size_fields)
 
 
 class DynamicFieldsMixin:

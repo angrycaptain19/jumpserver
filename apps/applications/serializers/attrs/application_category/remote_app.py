@@ -48,5 +48,4 @@ class RemoteAppSerializer(serializers.Serializer):
             return {}
         if not asset:
             return {}
-        asset_info = {'id': str(asset[0]), 'hostname': asset[1]}
-        return asset_info
+        return {'id': str(asset[0]), 'hostname': asset[1]}

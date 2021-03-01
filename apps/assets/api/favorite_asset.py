@@ -20,8 +20,7 @@ class FavoriteAssetViewSet(BulkModelViewSet):
             return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        queryset = FavoriteAsset.objects.filter(user=self.request.user)
-        return queryset
+        return FavoriteAsset.objects.filter(user=self.request.user)
 
     def allow_bulk_destroy(self, qs, filtered):
         return filtered.count() == 1

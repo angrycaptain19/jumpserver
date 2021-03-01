@@ -34,12 +34,11 @@ class OrgResourceStatisticsCache(OrgRelatedCache):
 
     def compute_users_amount(self):
         if self.org.is_real():
-            users_amount = OrganizationMember.objects.values(
+            return OrganizationMember.objects.values(
                 'user_id'
             ).filter(org_id=self.org.id).distinct().count()
         else:
-            users_amount = User.objects.all().distinct().count()
-        return users_amount
+            return User.objects.all().distinct().count()
 
     def compute_assets_amount(self):
         node = Node.org_root()

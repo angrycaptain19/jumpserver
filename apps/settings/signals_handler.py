@@ -41,9 +41,13 @@ def auto_generate_terminal_host_key(sender, **kwargs):
 def on_create_set_created_by(sender, instance=None, **kwargs):
     if getattr(instance, '_ignore_auto_created_by', False) is True:
         return
-    if hasattr(instance, 'created_by') and not instance.created_by:
-        if current_request and current_request.user.is_authenticated:
-            user_name = current_request.user.name
-            if isinstance(user_name, str):
-                user_name = user_name[:30]
-            instance.created_by = user_name
+    if (
+        hasattr(instance, 'created_by')
+        and not instance.created_by
+        and current_request
+        and current_request.user.is_authenticated
+    ):
+        user_name = current_request.user.name
+        if isinstance(user_name, str):
+            user_name = user_name[:30]
+        instance.created_by = user_name

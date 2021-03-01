@@ -28,8 +28,7 @@ class DatesLoginMetricMixin:
     @lazyproperty
     def sessions_queryset(self):
         days = timezone.now() - timezone.timedelta(days=self.days)
-        sessions_queryset = Session.objects.filter(date_start__gt=days)
-        return sessions_queryset
+        return Session.objects.filter(date_start__gt=days)
 
     @lazyproperty
     def session_dates_list(self):
@@ -40,21 +39,18 @@ class DatesLoginMetricMixin:
         return dates
 
     def get_dates_metrics_date(self):
-        dates_metrics_date = [d.strftime('%m-%d') for d in self.session_dates_list] or ['0']
-        return dates_metrics_date
+        return [d.strftime('%m-%d') for d in self.session_dates_list] or ['0']
 
     @staticmethod
     def get_cache_key(date, tp):
         date_str = date.strftime("%Y%m%d")
-        key = "SESSION_DATE_{}_{}_{}".format(current_org.id, tp, date_str)
-        return key
+        return "SESSION_DATE_{}_{}_{}".format(current_org.id, tp, date_str)
 
     def __get_data_from_cache(self, date, tp):
         if date == timezone.now().date():
             return None
         cache_key = self.get_cache_key(date, tp)
-        count = cache.get(cache_key)
-        return count
+        return cache.get(cache_key)
 
     def __set_data_to_cache(self, date, tp, count):
         cache_key = self.get_cache_key(date, tp)
@@ -84,7 +80,7 @@ class DatesLoginMetricMixin:
         for d in self.session_dates_list:
             count = self.get_date_login_count(d)
             data.append(count)
-        if len(data) == 0:
+        if not data:
             data = [0]
         return data
 
@@ -124,16 +120,14 @@ class DatesLoginMetricMixin:
 
     @lazyproperty
     def dates_total_count_active_users(self):
-        count = len(set(self.sessions_queryset.values_list('user', flat=True)))
-        return count
+        return len(set(self.sessions_queryset.values_list('user', flat=True)))
 
     @lazyproperty
     def dates_total_count_inactive_users(self):
         total = current_org.get_members().count()
         active = self.dates_total_count_active_users
         count = total - active
-        if count < 0:
-            count = 0
+        count = max(count, 0)
         return count
 
     @lazyproperty
@@ -149,8 +143,7 @@ class DatesLoginMetricMixin:
         total = Asset.objects.all().count()
         active = self.dates_total_count_active_assets
         count = total - active
-        if count < 0:
-            count = 0
+        count = max(count, 0)
         return count
 
     @lazyproperty
@@ -216,8 +209,13 @@ class TotalCountMixin:
 
     @staticmethod
     def get_total_count_online_users():
-        count = len(set(Session.objects.filter(is_finished=False).values_list('user', flat=True)))
-        return count
+        return len(
+            set(
+                Session.objects.filter(is_finished=False).values_list(
+                    'user', flat=True
+                )
+            )
+        )
 
     @staticmethod
     def get_total_count_online_sessions():

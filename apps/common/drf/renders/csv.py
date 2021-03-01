@@ -26,5 +26,4 @@ class CSVFileRenderer(BaseFileRenderer):
         self.writer.writerow(row)
 
     def get_rendered_value(self):
-        value = self.buffer.getvalue()
-        return value
+        return self.buffer.getvalue()

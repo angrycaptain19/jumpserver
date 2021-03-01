@@ -114,9 +114,10 @@ class AESCryptoGCM:
         cipher.update(header)
         ciphertext, tag = cipher.encrypt_and_digest(bytes(text, encoding='utf-8'))
 
-        result = []
-        for byte_data in (header, cipher.nonce, tag, ciphertext):
-            result.append(base64.b64encode(byte_data).decode('utf-8'))
+        result = [
+            base64.b64encode(byte_data).decode('utf-8')
+            for byte_data in (header, cipher.nonce, tag, ciphertext)
+        ]
 
         return ''.join(result)
 

@@ -97,8 +97,7 @@ def delete_celery_periodic_task(task_name):
 
 def get_celery_periodic_task(task_name):
     from django_celery_beat.models import PeriodicTask
-    task = PeriodicTask.objects.filter(name=task_name).first()
-    return task
+    return PeriodicTask.objects.filter(name=task_name).first()
 
 
 def get_celery_task_log_path(task_id):
@@ -111,12 +110,12 @@ def get_celery_status():
     i = app.control.inspect()
     ping_data = i.ping() or {}
     active_nodes = [k for k, v in ping_data.items() if v.get('ok') == 'pong']
-    active_queue_worker = set([n.split('@')[0] for n in active_nodes if n])
-    if len(active_queue_worker) < 5:
-        print("Not all celery worker worked")
-        return False
-    else:
+    active_queue_worker = {n.split('@')[0] for n in active_nodes if n}
+    if len(active_queue_worker) >= 5:
         return True
+
+    print("Not all celery worker worked")
+    return False
 
 
 def get_beat_status():
@@ -124,7 +123,6 @@ def get_beat_status():
     r = redis.Redis(host=CONFIG.REDIS_HOST, port=CONFIG.REDIS_PORT, password=CONFIG.REDIS_PASSWORD)
     lock = redis_lock.Lock(r, name="beat-distribute-start-lock")
     try:
-        locked = lock.locked()
-        return locked
+        return lock.locked()
     except redis.ConnectionError:
         return False

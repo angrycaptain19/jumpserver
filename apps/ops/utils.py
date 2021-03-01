@@ -56,8 +56,8 @@ def update_or_create_ansible_task(
 
     hosts_same = True
     if adhoc:
-        old_hosts = set([str(asset.id) for asset in adhoc.hosts.all()])
-        new_hosts = set([str(asset.id) for asset in hosts])
+        old_hosts = {str(asset.id) for asset in adhoc.hosts.all()}
+        new_hosts = {str(asset.id) for asset in hosts}
         hosts_same = old_hosts == new_hosts
 
     if not adhoc or not adhoc.same_with(new_adhoc) or not hosts_same:

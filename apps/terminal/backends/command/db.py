@@ -30,14 +30,12 @@ class CommandStore(CommandBase):
         """
         批量保存命令到数据库, command的顺序和save中一致
         """
-        _commands = []
-        for c in commands:
-            _commands.append(self.model(
+        _commands = [self.model(
                 user=c["user"], asset=c["asset"], system_user=c["system_user"],
                 input=c["input"], output=c["output"], session=c["session"],
                 risk_level=c.get("risk_level", 0), org_id=c["org_id"],
                 timestamp=c["timestamp"]
-            ))
+            ) for c in commands]
         error = False
         try:
             with transaction.atomic():
@@ -104,8 +102,7 @@ class CommandStore(CommandBase):
             asset=asset, system_user=system_user, input=input,
             session=session, risk_level=risk_level, org_id=org_id,
         )
-        queryset = self.model.objects.filter(**filter_kwargs)
-        return queryset
+        return self.model.objects.filter(**filter_kwargs)
 
     def count(self, date_from=None, date_to=None,
               user=None, asset=None, system_user=None,
@@ -115,7 +112,6 @@ class CommandStore(CommandBase):
             asset=asset, system_user=system_user, input=input,
             session=session,
         )
-        count = self.model.objects.filter(**filter_kwargs).count()
-        return count
+        return self.model.objects.filter(**filter_kwargs).count()
 
 

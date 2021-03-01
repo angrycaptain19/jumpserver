@@ -97,8 +97,7 @@ class AssetUserViewSet(CommonApiMixin, BulkModelViewSet):
         if pk is None:
             return
         queryset = self.get_queryset()
-        obj = queryset.get(id=pk)
-        return obj
+        return queryset.get(id=pk)
 
     def get_exception_handler(self):
         def handler(e, context):
@@ -112,8 +111,7 @@ class AssetUserViewSet(CommonApiMixin, BulkModelViewSet):
 
     def get_queryset(self):
         manager = AssetUserManager()
-        queryset = manager.all()
-        return queryset
+        return manager.all()
 
 
 class AssetUserAuthInfoViewSet(AssetUserViewSet):

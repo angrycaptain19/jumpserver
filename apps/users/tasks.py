@@ -98,10 +98,7 @@ def import_ldap_user_periodic():
         return
 
     interval = settings.AUTH_LDAP_SYNC_INTERVAL
-    if isinstance(interval, int):
-        interval = interval * 3600
-    else:
-        interval = None
+    interval = interval * 3600 if isinstance(interval, int) else None
     crontab = settings.AUTH_LDAP_SYNC_CRONTAB
     tasks = {
         'import_ldap_user_periodic': {

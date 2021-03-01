@@ -51,19 +51,15 @@ class LoginConfirmSetting(CommonModelMixin):
 
     @staticmethod
     def construct_confirm_ticket_meta(request=None):
-        if request:
-            login_ip = get_request_ip(request)
-        else:
-            login_ip = ''
+        login_ip = get_request_ip(request) if request else ''
         login_ip = login_ip or '0.0.0.0'
         login_city = get_ip_city(login_ip)
         login_datetime = timezone.now().strftime('%Y-%m-%d %H:%M:%S')
-        ticket_meta = {
+        return {
             'apply_login_ip': login_ip,
             'apply_login_city': login_city,
             'apply_login_datetime': login_datetime,
         }
-        return ticket_meta
 
     def create_confirm_ticket(self, request=None):
         from tickets import const

@@ -118,7 +118,7 @@ class SettingsSerializer(serializers.Serializer):
                     setting = Setting.objects.get(name=field_name)
                 except Setting.DoesNotExist:
                     setting = Setting()
-                encrypted = True if field_name in self.encrypt_fields else False
+                encrypted = field_name in self.encrypt_fields
                 setting.name = field_name
                 setting.category = category
                 setting.encrypted = encrypted

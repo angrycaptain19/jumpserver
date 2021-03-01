@@ -43,8 +43,7 @@ class UserLoginLogViewSet(ListModelMixin, CommonGenericViewSet):
 
     @staticmethod
     def get_org_members():
-        users = current_org.get_members().values_list('username', flat=True)
-        return users
+        return current_org.get_members().values_list('username', flat=True)
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -80,10 +79,9 @@ class PasswordChangeLogViewSet(ListModelMixin, CommonGenericViewSet):
 
     def get_queryset(self):
         users = current_org.get_members()
-        queryset = super().get_queryset().filter(
+        return super().get_queryset().filter(
             user__in=[user.__str__() for user in users]
         )
-        return queryset
 
 
 class CommandExecutionViewSet(ListModelMixin, OrgGenericViewSet):

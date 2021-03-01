@@ -18,8 +18,7 @@ class Handler(BaseHandler):
         apply_actions = self.ticket.meta.get('apply_actions', Action.NONE)
         apply_actions_display = Action.value_to_choices_display(apply_actions)
         meta_display_values = [apply_actions_display]
-        meta_display = dict(zip(meta_display_fields, meta_display_values))
-        return meta_display
+        return dict(zip(meta_display_fields, meta_display_values))
 
     def _construct_meta_display_of_approve(self):
         meta_display_fields = [
@@ -37,8 +36,7 @@ class Handler(BaseHandler):
         meta_display_values = [
             approve_actions_display, approve_assets_display, approve_system_users_display
         ]
-        meta_display = dict(zip(meta_display_fields, meta_display_values))
-        return meta_display
+        return dict(zip(meta_display_fields, meta_display_values))
 
     # body
     def _construct_meta_body_of_open(self):
@@ -48,20 +46,25 @@ class Handler(BaseHandler):
         apply_actions_display = self.ticket.meta.get('apply_actions_display', [])
         apply_date_start = self.ticket.meta.get('apply_date_start')
         apply_date_expired = self.ticket.meta.get('apply_date_expired')
-        applied_body = '''{}: {},
+        return '''{}: {},
             {}: {},
             {}: {},
             {}: {},
             {}: {}
         '''.format(
-            _('Applied IP group'), apply_ip_group,
-            _("Applied hostname group"), apply_hostname_group,
-            _("Applied system user group"), apply_system_user_group,
-            _("Applied actions"), apply_actions_display,
-            _('Applied date start'), apply_date_start,
-            _('Applied date expired'), apply_date_expired,
+            _('Applied IP group'),
+            apply_ip_group,
+            _("Applied hostname group"),
+            apply_hostname_group,
+            _("Applied system user group"),
+            apply_system_user_group,
+            _("Applied actions"),
+            apply_actions_display,
+            _('Applied date start'),
+            apply_date_start,
+            _('Applied date expired'),
+            apply_date_expired,
         )
-        return applied_body
 
     def _construct_meta_body_of_approve(self):
         approve_assets_display = self.ticket.meta.get('approve_assets_display', [])
@@ -69,19 +72,23 @@ class Handler(BaseHandler):
         approve_actions_display = self.ticket.meta.get('approve_actions_display', [])
         approve_date_start = self.ticket.meta.get('approve_date_start')
         approve_date_expired = self.ticket.meta.get('approve_date_expired')
-        approved_body = '''{}: {},
+        return '''{}: {},
             {}: {},
             {}: {},
             {}: {},
             {}: {}
         '''.format(
-            _('Approved assets'), approve_assets_display,
-            _('Approved system users'), approve_system_users_display,
-            _('Approved actions'), ', '.join(approve_actions_display),
-            _('Approved date start'), approve_date_start,
-            _('Approved date expired'), approve_date_expired,
+            _('Approved assets'),
+            approve_assets_display,
+            _('Approved system users'),
+            approve_system_users_display,
+            _('Approved actions'),
+            ', '.join(approve_actions_display),
+            _('Approved date start'),
+            approve_date_start,
+            _('Approved date expired'),
+            approve_date_expired,
         )
-        return approved_body
 
     # permission
     def _create_asset_permission(self):

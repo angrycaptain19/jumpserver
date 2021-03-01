@@ -27,10 +27,9 @@ class AssetPermissionViewSet(BasePermissionViewSet):
     ]
 
     def get_queryset(self):
-        queryset = super().get_queryset().prefetch_related(
+        return super().get_queryset().prefetch_related(
             "nodes", "assets", "users", "user_groups", "system_users"
         )
-        return queryset
 
     def filter_node(self, queryset):
         node_id = self.request.query_params.get('node_id')

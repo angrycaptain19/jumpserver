@@ -140,5 +140,4 @@ class AssetGatewayListApi(generics.ListAPIView):
         asset = get_object_or_404(Asset, pk=asset_id)
         if not asset.domain:
             return []
-        queryset = asset.domain.gateways.filter(protocol='ssh')
-        return queryset
+        return asset.domain.gateways.filter(protocol='ssh')

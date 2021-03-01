@@ -56,7 +56,7 @@ def parse_windows_result_to_users(result):
 
     for i in range(4):
         task_result.pop(0)
-    for i in range(2):
+    for _ in range(2):
         task_result.pop()
 
     for line in task_result:

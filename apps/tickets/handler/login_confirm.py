@@ -9,7 +9,7 @@ class Handler(BaseHandler):
         apply_login_ip = self.ticket.meta.get('apply_login_ip')
         apply_login_city = self.ticket.meta.get('apply_login_city')
         apply_login_datetime = self.ticket.meta.get('apply_login_datetime')
-        applied_body = '''{}: {},
+        return '''{}: {},
             {}: {},
             {}: {}
         '''.format(
@@ -17,4 +17,3 @@ class Handler(BaseHandler):
             _("Applied login city"), apply_login_city,
             _("Applied login datetime"), apply_login_datetime,
         )
-        return applied_body

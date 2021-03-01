@@ -146,9 +146,7 @@ class Terminal(TerminalStatusMixin, models.Model):
 
     @property
     def is_active(self):
-        if self.user and self.user.is_active:
-            return True
-        return False
+        return bool(self.user and self.user.is_active)
 
     @is_active.setter
     def is_active(self, active):
@@ -158,16 +156,11 @@ class Terminal(TerminalStatusMixin, models.Model):
 
     def get_command_storage(self):
         from .storage import CommandStorage
-        storage = CommandStorage.objects.filter(name=self.command_storage).first()
-        return storage
+        return CommandStorage.objects.filter(name=self.command_storage).first()
 
     def get_command_storage_config(self):
         s = self.get_command_storage()
-        if s:
-            config = s.config
-        else:
-            config = settings.DEFAULT_TERMINAL_COMMAND_STORAGE
-        return config
+        return s.config if s else settings.DEFAULT_TERMINAL_COMMAND_STORAGE
 
     def get_command_storage_setting(self):
         config = self.get_command_storage_config()
@@ -175,16 +168,11 @@ class Terminal(TerminalStatusMixin, models.Model):
 
     def get_replay_storage(self):
         from .storage import ReplayStorage
-        storage = ReplayStorage.objects.filter(name=self.replay_storage).first()
-        return storage
+        return ReplayStorage.objects.filter(name=self.replay_storage).first()
 
     def get_replay_storage_config(self):
         s = self.get_replay_storage()
-        if s:
-            config = s.config
-        else:
-            config = settings.DEFAULT_TERMINAL_REPLAY_STORAGE
-        return config
+        return s.config if s else settings.DEFAULT_TERMINAL_REPLAY_STORAGE
 
     def get_replay_storage_setting(self):
         config = self.get_replay_storage_config()

@@ -144,7 +144,7 @@ class SessionReplayViewSet(AsyncApiMixin, viewsets.ViewSet):
             tp = 'guacamole'
 
         download_url = reverse('api-terminal:session-replay-download', kwargs={'pk': session.id})
-        data = {
+        return {
             'type': tp, 'src': url,
             'user': session.user, 'asset': session.asset,
             'system_user': session.system_user,
@@ -152,12 +152,9 @@ class SessionReplayViewSet(AsyncApiMixin, viewsets.ViewSet):
             'date_end': session.date_end,
             'download_url': download_url,
         }
-        return data
 
     def is_need_async(self):
-        if self.action != 'retrieve':
-            return False
-        return True
+        return self.action == 'retrieve'
 
     def retrieve(self, request, *args, **kwargs):
         session_id = kwargs.get('pk')
@@ -166,8 +163,8 @@ class SessionReplayViewSet(AsyncApiMixin, viewsets.ViewSet):
 
         if not local_path:
             local_path, url = download_session_replay(session)
-            if not local_path:
-                return Response({"error": url})
+        if not local_path:
+            return Response({"error": url})
         data = self.get_replay_data(session, url)
         return Response(data)
 

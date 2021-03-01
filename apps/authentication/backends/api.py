@@ -98,7 +98,7 @@ class AccessKeyAuthentication(authentication.BaseAuthentication):
                 _('Expired, more than 15 minutes'))
 
         signature = make_signature(access_key_secret, request_date)
-        if not signature == request_signature:
+        if signature != request_signature:
             raise exceptions.AuthenticationFailed(_('Invalid signature.'))
 
         if not access_key.user.is_active:

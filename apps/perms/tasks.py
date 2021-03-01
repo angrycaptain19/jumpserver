@@ -53,10 +53,7 @@ def check_asset_permission_expired():
     setting, created = Setting.objects.get_or_create(
         name=setting_name, defaults=defaults
     )
-    if created:
-        start = default_start
-    else:
-        start = dt_parser(setting.value)
+    start = default_start if created else dt_parser(setting.value)
     setting.value = dt_formater(end)
     setting.save()
 

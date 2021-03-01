@@ -110,8 +110,10 @@ class LDAPServerUtil(object):
         if self._paged_size is None:
             return None
         try:
-            cookie = self.connection.result['controls']['1.2.840.113556.1.4.319']['value']['cookie']
-            return cookie
+            return self.connection.result['controls']['1.2.840.113556.1.4.319'][
+                'value'
+            ]['cookie']
+
         except Exception as e:
             logger.error(e, exc_info=True)
             return None
@@ -147,7 +149,7 @@ class LDAPServerUtil(object):
 
     @staticmethod
     def distinct_user_entries(user_entries):
-        distinct_user_entries = list()
+        distinct_user_entries = []
         distinct_user_entries_dn = set()
         for user_entry in user_entries:
             if user_entry.entry_dn in distinct_user_entries_dn:
@@ -161,7 +163,7 @@ class LDAPServerUtil(object):
         logger.info("Search user entries")
         self.search_users = search_users
         self.search_value = search_value
-        user_entries = list()
+        user_entries = []
         search_ous = str(self.config.search_ou).split('|')
         for search_ou in search_ous:
             logger.info("Search user entries ou: {}".format(search_ou))
@@ -195,12 +197,10 @@ class LDAPServerUtil(object):
 
     def search_for_user_dn(self, username):
         user_entries = self.search_user_entries(search_users=[username])
-        if len(user_entries) == 1:
-            user_entry = user_entries[0]
-            user_dn = user_entry.entry_dn
-        else:
-            user_dn = None
-        return user_dn
+        if len(user_entries) != 1:
+            return None
+        user_entry = user_entries[0]
+        return user_entry.entry_dn
 
     @timeit
     def search(self, search_users=None, search_value=None):
@@ -208,8 +208,7 @@ class LDAPServerUtil(object):
         user_entries = self.search_user_entries(
             search_users=search_users, search_value=search_value
         )
-        users = self.user_entries_to_dict(user_entries)
-        return users
+        return self.user_entries_to_dict(user_entries)
 
 
 class LDAPCacheUtil(object):
@@ -237,18 +236,17 @@ class LDAPCacheUtil(object):
         if users is None:
             return users
         if self.search_users:
-            filter_users = [
+            return [
                 user for user in users
                 if user['username'] in self.search_users
             ]
         elif self.search_value:
-            filter_users = [
+            return [
                 user for user in users
                 if self.search_value.lower() in ','.join(user.values()).lower()
             ]
         else:
-            filter_users = users
-        return filter_users
+            return users
 
     def search(self, search_users=None, search_value=None):
         self.search_users = search_users
@@ -310,8 +308,7 @@ class LDAPSyncUtil(object):
 
     def get_task_error_msg(self):
         logger.info('Get task error msg')
-        error_msg = cache.get(self.CACHE_KEY_LDAP_USERS_SYNC_TASK_ERROR_MSG)
-        return error_msg
+        return cache.get(self.CACHE_KEY_LDAP_USERS_SYNC_TASK_ERROR_MSG)
 
     def delete_task_error_msg(self):
         logger.info('Delete task error msg')
@@ -396,8 +393,7 @@ class LDAPTestUtil(object):
         connection = Connection(
             server, user=user, password=password, authentication=authentication
         )
-        ret = connection.bind()
-        return ret
+        return connection.bind()
 
     # test server uri
 

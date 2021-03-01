@@ -77,10 +77,7 @@ class AdHocResultCallback(CallbackMixin, CallbackModule, CMDCallBackModule):
 
         if task_result.get('rc') is not None:
             cmd = task_result.get('cmd')
-            if isinstance(cmd, list):
-                cmd = " ".join(cmd)
-            else:
-                cmd = str(cmd)
+            cmd = " ".join(cmd) if isinstance(cmd, list) else str(cmd)
             detail = {
                 'cmd': cmd,
                 'stderr': task_result.get('stderr'),
@@ -160,7 +157,7 @@ class CommandResultCallback(AdHocResultCallback):
     """
     def __init__(self, display=None, **kwargs):
 
-        self.results_command = dict()
+        self.results_command = {}
         super().__init__(display)
 
     def gather_result(self, t, res):
@@ -271,9 +268,7 @@ class PlaybookResultCallBack(CallbackBase):
             s = stats.summarize(h)
             summary[h] = s
 
-        if self.output:
-            pass
-        else:
+        if not self.output:
             self.output = {
                 'plays': self.results,
                 'stats': summary

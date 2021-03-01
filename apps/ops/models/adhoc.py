@@ -156,20 +156,15 @@ class AdHoc(OrgModelMixin):
 
     @property
     def inventory(self):
-        if self.become:
-            become_info = {
+        become_info = {
                 'become': {
                     self.become
                 }
-            }
-        else:
-            become_info = None
-
-        inventory = JMSInventory(
+            } if self.become else None
+        return JMSInventory(
             self.hosts.all(), run_as_admin=self.run_as_admin,
             run_as=self.run_as, become_info=become_info
         )
-        return inventory
 
     @property
     def become_display(self):
@@ -216,14 +211,16 @@ class AdHoc(OrgModelMixin):
     def same_with(self, other):
         if not isinstance(other, self.__class__):
             return False
-        fields_check = []
-        for field in self.__class__._meta.fields:
-            if field.name not in ['id', 'date_created']:
-                fields_check.append(field)
-        for field in fields_check:
-            if getattr(self, field.name) != getattr(other, field.name):
-                return False
-        return True
+        fields_check = [
+            field
+            for field in self.__class__._meta.fields
+            if field.name not in ['id', 'date_created']
+        ]
+
+        return all(
+            getattr(self, field.name) == getattr(other, field.name)
+            for field in fields_check
+        )
 
     class Meta:
         db_table = "ops_adhoc"

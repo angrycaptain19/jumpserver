@@ -62,10 +62,12 @@ def set_assets_hardware_info(assets, result, **kwargs):
         ___memory = '%s %s' % capacity_convert(
             '{} MB'.format(info.get('ansible_memtotal_mb'))
         )
-        disk_info = {}
-        for dev, dev_info in info.get('ansible_devices', {}).items():
-            if disk_pattern.match(dev) and dev_info['removable'] == '0':
-                disk_info[dev] = dev_info['size']
+        disk_info = {
+            dev: dev_info['size']
+            for dev, dev_info in info.get('ansible_devices', {}).items()
+            if disk_pattern.match(dev) and dev_info['removable'] == '0'
+        }
+
         ___disk_total = '%.1f %s' % sum_capacity(disk_info.values())
         ___disk_info = json.dumps(disk_info)
 
@@ -136,5 +138,4 @@ def update_assets_hardware_info_period():
 def update_node_assets_hardware_info_manual(node):
     task_name = _("Update node asset hardware information: {}").format(node.name)
     assets = node.get_all_assets()
-    result = update_assets_hardware_info_util(assets, task_name=task_name)
-    return result
+    return update_assets_hardware_info_util(assets, task_name=task_name)

@@ -16,9 +16,7 @@ class BaseFileRenderer(BaseRenderer):
     @staticmethod
     def _check_validation_data(data):
         detail_key = "detail"
-        if detail_key in data:
-            return False
-        return True
+        return detail_key not in data
 
     @staticmethod
     def _json_format_response(response_data):

@@ -54,8 +54,10 @@ class SerializeApplicationToTreeNodeMixin:
         return data
 
     def serialize_applications(self, applications):
-        data = [self._serialize_application(application) for application in applications]
-        return data
+        return [
+            self._serialize_application(application)
+            for application in applications
+        ]
 
     @staticmethod
     def _serialize_organization(org):
@@ -72,18 +74,15 @@ class SerializeApplicationToTreeNodeMixin:
         }
 
     def serialize_organizations(self, organizations):
-        data = [self._serialize_organization(org) for org in organizations]
-        return data
+        return [self._serialize_organization(org) for org in organizations]
 
     @staticmethod
     def filter_organizations(applications):
         organizations_id = set(applications.values_list('org_id', flat=True))
-        organizations = [Organization.get_instance(org_id) for org_id in organizations_id]
-        return organizations
+        return [Organization.get_instance(org_id) for org_id in organizations_id]
 
     def serialize_applications_with_org(self, applications):
         organizations = self.filter_organizations(applications)
         data_organizations = self.serialize_organizations(organizations)
         data_applications = self.serialize_applications(applications)
-        data = data_organizations + data_applications
-        return data
+        return data_organizations + data_applications

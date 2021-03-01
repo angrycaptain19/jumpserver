@@ -39,8 +39,7 @@ class CommandExecution(OrgModelMixin):
             username = self.user.username
         else:
             username = self.run_as.username
-        inv = JMSInventory(self.hosts.all(), run_as=username, system_user=self.run_as)
-        return inv
+        return JMSInventory(self.hosts.all(), run_as=username, system_user=self.run_as)
 
     @lazyproperty
     def run_as_display(self):
@@ -63,9 +62,7 @@ class CommandExecution(OrgModelMixin):
 
     @property
     def is_success(self):
-        if 'error' in self.result:
-            return False
-        return True
+        return 'error' not in self.result
 
     def get_hosts_names(self):
         return ','.join(self.hosts.all().values_list('hostname', flat=True))

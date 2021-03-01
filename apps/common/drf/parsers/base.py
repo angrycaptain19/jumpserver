@@ -48,11 +48,10 @@ class BaseFileParser(BaseParser):
         fields = self.serializer_cls().fields
         fields_map.update({v.label: k for k, v in fields.items()})
         fields_map.update({k: k for k, _ in fields.items()})
-        field_names = [
+        return [
             fields_map.get(column_title.strip('*'), '')
             for column_title in column_titles
         ]
-        return field_names
 
     @staticmethod
     def _replace_chinese_quote(s):
@@ -128,8 +127,7 @@ class BaseFileParser(BaseParser):
             rows = self.generate_rows(stream_data)
             column_titles = self.get_column_titles(rows)
             field_names = self.convert_to_field_names(column_titles)
-            data = self.generate_data(field_names, rows)
-            return data
+            return self.generate_data(field_names, rows)
         except Exception as e:
             logger.error(e, exc_info=True)
             raise ParseError('Parse error! ({})'.format(self.media_type))

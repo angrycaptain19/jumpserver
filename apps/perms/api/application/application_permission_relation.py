@@ -109,9 +109,8 @@ class ApplicationPermissionAllApplicationListApi(generics.ListAPIView):
     def get_queryset(self):
         pk = self.kwargs.get('pk')
         perm = get_object_or_404(models.ApplicationPermission, pk=pk)
-        applications = Application.objects.filter(granted_by_permissions=perm)\
+        return Application.objects.filter(granted_by_permissions=perm)\
             .only(*self.only_fields).distinct()
-        return applications
 
 
 class ApplicationPermissionAllUserListApi(generics.ListAPIView):
@@ -124,5 +123,4 @@ class ApplicationPermissionAllUserListApi(generics.ListAPIView):
     def get_queryset(self):
         pk = self.kwargs.get('pk')
         perm = get_object_or_404(models.ApplicationPermission, pk=pk)
-        users = perm.get_all_users().only(*self.only_fields).distinct()
-        return users
+        return perm.get_all_users().only(*self.only_fields).distinct()
