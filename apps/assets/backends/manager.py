@@ -85,8 +85,7 @@ class AssetUserQueryset:
         queryset = list(queryset)
         count = len(queryset)
         if count == 1:
-            data = queryset[0]
-            return data
+            return queryset[0]
         elif count > 1:
             msg = 'Should return 1 record, but get {}'.format(count)
             raise MultipleObjectsReturned(msg)

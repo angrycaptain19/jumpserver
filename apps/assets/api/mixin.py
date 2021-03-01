@@ -38,12 +38,11 @@ class SerializeToTreeNodeMixin:
         return data
 
     def get_platform(self, asset: Asset):
-        default = 'file'
         icon = {'windows', 'linux'}
         platform = asset.platform_base.lower()
         if platform in icon:
             return platform
-        return default
+        return 'file'
 
     def serialize_assets(self, assets, node_key=None):
         if node_key is None:
@@ -51,7 +50,7 @@ class SerializeToTreeNodeMixin:
         else:
             get_pid = lambda asset: node_key
 
-        data = [
+        return [
             {
                 'id': str(asset.id),
                 'name': asset.hostname,
@@ -75,7 +74,6 @@ class SerializeToTreeNodeMixin:
             }
             for asset in assets
         ]
-        return data
 
 
 class FilterAssetByNodeMixin:

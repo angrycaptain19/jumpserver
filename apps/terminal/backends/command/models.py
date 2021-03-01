@@ -48,10 +48,7 @@ class AbstractSessionCommand(OrgModelMixin):
         return commands
 
     def to_dict(self):
-        d = {}
-        for field in self._meta.fields:
-            d[field.name] = getattr(self, field.name)
-        return d
+        return {field.name: getattr(self, field.name) for field in self._meta.fields}
 
     def __str__(self):
         return self.input

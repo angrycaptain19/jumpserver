@@ -143,7 +143,7 @@ def is_uuid(seq):
     elif isinstance(seq, str) and UUID_PATTERN.match(seq):
         return True
     elif isinstance(seq, (list, tuple)):
-        all([is_uuid(x) for x in seq])
+        all(is_uuid(x) for x in seq)
     return False
 
 
@@ -151,10 +151,9 @@ def get_request_ip(request):
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR', '').split(',')
 
     if x_forwarded_for and x_forwarded_for[0]:
-        login_ip = x_forwarded_for[0]
+        return x_forwarded_for[0]
     else:
-        login_ip = request.META.get('REMOTE_ADDR', '')
-    return login_ip
+        return request.META.get('REMOTE_ADDR', '')
 
 
 def get_request_ip_or_data(request):
@@ -166,8 +165,7 @@ def get_request_ip_or_data(request):
 
 
 def get_request_user_agent(request):
-    user_agent = request.META.get('HTTP_USER_AGENT', '')
-    return user_agent
+    return request.META.get('HTTP_USER_AGENT', '')
 
 
 def validate_ip(ip):
@@ -207,10 +205,7 @@ logger = get_logger(__name__)
 
 def timeit(func):
     def wrapper(*args, **kwargs):
-        if hasattr(func, '__name__'):
-            name = func.__name__
-        else:
-            name = func
+        name = func.__name__ if hasattr(func, '__name__') else func
         logger.debug("Start call: {}".format(name))
         now = time.time()
         result = func(*args, **kwargs)
@@ -222,10 +217,9 @@ def timeit(func):
 
 
 def group_obj_by_count(objs, count=50):
-    objs_grouped = [
+    return [
         objs[i:i + count] for i in range(0, len(objs), count)
     ]
-    return objs_grouped
 
 
 def dict_get_any(d, keys):
@@ -243,14 +237,12 @@ class lazyproperty:
     def __get__(self, instance, cls):
         if instance is None:
             return self
-        else:
-            value = self.func(instance)
-            setattr(instance, self.func.__name__, value)
-            return value
+        value = self.func(instance)
+        setattr(instance, self.func.__name__, value)
+        return value
 
 
 def get_disk_usage():
     partitions = psutil.disk_partitions()
     mount_points = [p.mountpoint for p in partitions]
-    usages = {p: psutil.disk_usage(p) for p in mount_points}
-    return usages
+    return {p: psutil.disk_usage(p) for p in mount_points}

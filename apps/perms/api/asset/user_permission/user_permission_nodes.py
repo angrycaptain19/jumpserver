@@ -53,8 +53,7 @@ class NodeChildrenMixin:
         raise NotImplementedError
 
     def get_nodes(self):
-        nodes = self.get_children()
-        return nodes
+        return self.get_children()
 
 
 class BaseGrantedNodeApi(_GrantedNodeStructApi, metaclass=abc.ABCMeta):
@@ -92,17 +91,15 @@ class UserGrantedNodeChildrenMixin(UserNodeGrantStatusDispatchMixin):
         key = self.request.query_params.get('key')
 
         if not key:
-            nodes = list(get_top_level_granted_nodes(user))
+            return list(get_top_level_granted_nodes(user))
         else:
-            nodes = self.dispatch_get_data(key, user)
-        return nodes
+            return self.dispatch_get_data(key, user)
 
     def get_data_on_node_direct_granted(self, key):
         return Node.objects.filter(parent_key=key)
 
     def get_data_on_node_indirect_granted(self, key):
-        nodes = get_indirect_granted_node_children(self.user, key)
-        return nodes
+        return get_indirect_granted_node_children(self.user, key)
 
     def get_data_on_node_not_granted(self, key):
         return Node.objects.none()

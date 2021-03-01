@@ -49,8 +49,7 @@ class TaskLogWebsocket(JsonWebsocketConsumer):
             self.send_json({'message': '\r\n'})
             try:
                 logger.debug('Task log path: {}'.format(log_path))
-                task_log_f = open(log_path, 'rb')
-                return task_log_f
+                return open(log_path, 'rb')
             except OSError:
                 return None
 

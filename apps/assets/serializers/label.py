@@ -45,4 +45,4 @@ class LabelDistinctSerializer(BulkOrgResourceModelSerializer):
     @staticmethod
     def get_value(obj):
         labels = Label.objects.filter(name=obj["name"])
-        return ', '.join([label.value for label in labels])
+        return ', '.join(label.value for label in labels)

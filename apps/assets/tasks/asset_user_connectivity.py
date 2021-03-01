@@ -22,17 +22,16 @@ __all__ = [
 
 def get_test_asset_user_connectivity_tasks(asset):
     if asset.is_unixlike():
-        tasks = const.PING_UNIXLIKE_TASKS
+        return const.PING_UNIXLIKE_TASKS
     elif asset.is_windows():
-        tasks = const.PING_WINDOWS_TASKS
+        return const.PING_WINDOWS_TASKS
     else:
         msg = _(
             "The asset {} system platform {} does not "
             "support run Ansible tasks".format(asset.hostname, asset.platform)
         )
         logger.info(msg)
-        tasks = []
-    return tasks
+        return []
 
 
 def run_adhoc(task_name, tasks, inventory):
@@ -124,8 +123,6 @@ def push_asset_user_util(asset_user):
     if not asset:
         return
     hosts = check_asset_can_run_ansible([asset])
-    if asset.is_unixlike:
-        pass
 
 
 

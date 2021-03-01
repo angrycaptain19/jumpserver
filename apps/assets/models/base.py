@@ -32,8 +32,7 @@ class ConnectivityMixin:
 
     @property
     def part_id(self):
-        i = '-'.join(str(self.id).split('-')[:3])
-        return i
+        return '-'.join(str(self.id).split('-')[:3])
 
     def set_connectivity(self, summary):
         unreachable = summary.get('dark', {}).keys()
@@ -108,8 +107,7 @@ class AuthMixin:
     @property
     def private_key_obj(self):
         if self.private_key:
-            key_obj = ssh_key_string_to_obj(self.private_key, password=self.password)
-            return key_obj
+            return ssh_key_string_to_obj(self.private_key, password=self.password)
         else:
             return None
 
@@ -131,8 +129,7 @@ class AuthMixin:
             return None
         string_io = io.StringIO()
         self.private_key_obj.write_private_key(string_io)
-        private_key = string_io.getvalue()
-        return private_key
+        return string_io.getvalue()
 
     @property
     def public_key_obj(self):
@@ -173,11 +170,10 @@ class AuthMixin:
             username = self.username
         try:
             manager = AssetUserManager()
-            other = manager.get_latest(
+            return manager.get_latest(
                 username=username, asset=asset,
                 prefer_id=self.id, prefer=self._prefer,
             )
-            return other
         except Exception as e:
             logger.error(e, exc_info=True)
             return None
@@ -247,8 +243,7 @@ class BaseUser(OrgModelMixin, AuthMixin, ConnectivityMixin):
     _prefer = "system_user"
 
     def get_related_assets(self):
-        assets = self.assets.filter(org_id=self.org_id)
-        return assets
+        return self.assets.filter(org_id=self.org_id)
 
     def get_username(self):
         return self.username

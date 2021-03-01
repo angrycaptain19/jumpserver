@@ -69,15 +69,11 @@ class BasePermission(OrgModelMixin):
 
     @property
     def is_expired(self):
-        if self.date_expired > timezone.now() > self.date_start:
-            return False
-        return True
+        return not self.date_expired > timezone.now() > self.date_start
 
     @property
     def is_valid(self):
-        if not self.is_expired and self.is_active:
-            return True
-        return False
+        return bool(not self.is_expired and self.is_active)
 
     @property
     def all_users(self):
@@ -100,10 +96,9 @@ class BasePermission(OrgModelMixin):
         from users.models import User
         users_id = self.users.all().values_list('id', flat=True)
         groups_id = self.user_groups.all().values_list('id', flat=True)
-        users = User.objects.filter(
+        return User.objects.filter(
             Q(id__in=users_id) | Q(groups__id__in=groups_id)
         ).distinct()
-        return users
 
     @lazyproperty
     def users_amount(self):

@@ -48,10 +48,15 @@ class ApplicationPermissionSerializer(BulkOrgResourceModelSerializer):
             application for application in applications
             if application.type != permission_type
         ]
-        if len(other_type_applications) > 0:
+        if other_type_applications:
             error = _(
                 'The application list contains applications '
                 'that are different from the permission type. ({})'
-            ).format(', '.join([application.name for application in other_type_applications]))
+            ).format(
+                ', '.join(
+                    application.name for application in other_type_applications
+                )
+            )
+
             raise serializers.ValidationError(error)
         return applications

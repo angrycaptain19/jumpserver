@@ -13,9 +13,7 @@ class GroupConcat(Aggregate):
             prefix, body = order_by[1], order_by[1:]
             if prefix == '-':
                 order = 'DESC'
-            elif prefix == '+':
-                pass
-            else:
+            elif prefix != '+':
                 body = order_by
             order_by_clause = f'ORDER BY {body} {order}'
 

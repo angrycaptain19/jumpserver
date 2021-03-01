@@ -35,51 +35,51 @@ class MailTestingAPI(APIView):
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
-        if serializer.is_valid():
-            email_host = serializer.validated_data['EMAIL_HOST']
-            email_port = serializer.validated_data['EMAIL_PORT']
-            email_host_user = serializer.validated_data["EMAIL_HOST_USER"]
-            email_host_password = serializer.validated_data['EMAIL_HOST_PASSWORD']
-            email_from = serializer.validated_data["EMAIL_FROM"]
-            email_recipient = serializer.validated_data["EMAIL_RECIPIENT"]
-            email_use_ssl = serializer.validated_data['EMAIL_USE_SSL']
-            email_use_tls = serializer.validated_data['EMAIL_USE_TLS']
-
-            # 设置 settings 的值，会导致动态配置在当前进程失效
-            # for k, v in serializer.validated_data.items():
-            #     if k.startswith('EMAIL'):
-            #         setattr(settings, k, v)
-            try:
-                subject = "Test"
-                message = "Test smtp setting"
-                email_from = email_from or email_host_user
-                email_recipient = email_recipient or email_from
-                connection = get_connection(
-                    host=email_host, port=email_port,
-                    username=email_host_user, password=email_host_password,
-                    use_tls=email_use_tls, use_ssl=email_use_ssl,
-                )
-                send_mail(
-                    subject, message, email_from, [email_recipient],
-                    connection=connection
-                )
-            except SMTPSenderRefused as e:
-                resp = e.smtp_error
-                if isinstance(resp, bytes):
-                    for coding in ('gbk', 'utf8'):
-                        try:
-                            resp = resp.decode(coding)
-                        except UnicodeDecodeError:
-                            continue
-                        else:
-                            break
-                return Response({"error": str(resp)}, status=400)
-            except Exception as e:
-                print(e)
-                return Response({"error": str(e)}, status=400)
-            return Response({"msg": self.success_message.format(email_recipient)})
-        else:
+        if not serializer.is_valid():
             return Response({"error": str(serializer.errors)}, status=400)
+
+        email_host = serializer.validated_data['EMAIL_HOST']
+        email_port = serializer.validated_data['EMAIL_PORT']
+        email_host_user = serializer.validated_data["EMAIL_HOST_USER"]
+        email_host_password = serializer.validated_data['EMAIL_HOST_PASSWORD']
+        email_from = serializer.validated_data["EMAIL_FROM"]
+        email_recipient = serializer.validated_data["EMAIL_RECIPIENT"]
+        email_use_ssl = serializer.validated_data['EMAIL_USE_SSL']
+        email_use_tls = serializer.validated_data['EMAIL_USE_TLS']
+
+        # 设置 settings 的值，会导致动态配置在当前进程失效
+        # for k, v in serializer.validated_data.items():
+        #     if k.startswith('EMAIL'):
+        #         setattr(settings, k, v)
+        try:
+            subject = "Test"
+            message = "Test smtp setting"
+            email_from = email_from or email_host_user
+            email_recipient = email_recipient or email_from
+            connection = get_connection(
+                host=email_host, port=email_port,
+                username=email_host_user, password=email_host_password,
+                use_tls=email_use_tls, use_ssl=email_use_ssl,
+            )
+            send_mail(
+                subject, message, email_from, [email_recipient],
+                connection=connection
+            )
+        except SMTPSenderRefused as e:
+            resp = e.smtp_error
+            if isinstance(resp, bytes):
+                for coding in ('gbk', 'utf8'):
+                    try:
+                        resp = resp.decode(coding)
+                    except UnicodeDecodeError:
+                        continue
+                    else:
+                        break
+            return Response({"error": str(resp)}, status=400)
+        except Exception as e:
+            print(e)
+            return Response({"error": str(e)}, status=400)
+        return Response({"msg": self.success_message.format(email_recipient)})
 
 
 class LDAPTestingConfigAPI(APIView):
@@ -105,7 +105,7 @@ class LDAPTestingConfigAPI(APIView):
         search_filter = serializer.validated_data["AUTH_LDAP_SEARCH_FILTER"]
         attr_map = serializer.validated_data["AUTH_LDAP_USER_ATTR_MAP"]
         auth_ldap = serializer.validated_data.get('AUTH_LDAP', False)
-        config = {
+        return {
             'server_uri': server_uri,
             'bind_dn': bind_dn,
             'password': password,
@@ -115,7 +115,6 @@ class LDAPTestingConfigAPI(APIView):
             'attr_map': attr_map,
             'auth_ldap': auth_ldap
         }
-        return config
 
 
 class LDAPTestingLoginAPI(APIView):
@@ -139,23 +138,20 @@ class LDAPUserListApi(generics.ListAPIView):
 
     def get_queryset_from_cache(self):
         search_value = self.request.query_params.get('search')
-        users = LDAPCacheUtil().search(search_value=search_value)
-        return users
+        return LDAPCacheUtil().search(search_value=search_value)
 
     def get_queryset_from_server(self):
         search_value = self.request.query_params.get('search')
-        users = LDAPServerUtil().search(search_value=search_value)
-        return users
+        return LDAPServerUtil().search(search_value=search_value)
 
     def get_queryset(self):
         if hasattr(self, 'swagger_fake_view'):
             return []
         cache_police = self.request.query_params.get('cache_police', True)
         if cache_police in LDAP_USE_CACHE_FLAGS:
-            users = self.get_queryset_from_cache()
+            return self.get_queryset_from_cache()
         else:
-            users = self.get_queryset_from_server()
-        return users
+            return self.get_queryset_from_server()
 
     @staticmethod
     def processing_queryset(queryset):
@@ -229,10 +225,9 @@ class LDAPUserImportAPI(APIView):
         username_list = self.request.data.get('username_list', [])
         cache_police = self.request.query_params.get('cache_police', True)
         if cache_police in LDAP_USE_CACHE_FLAGS:
-            users = LDAPCacheUtil().search(search_users=username_list)
+            return LDAPCacheUtil().search(search_users=username_list)
         else:
-            users = LDAPServerUtil().search(search_users=username_list)
-        return users
+            return LDAPServerUtil().search(search_users=username_list)
 
     def post(self, request):
         try:
@@ -268,7 +263,7 @@ class PublicSettingApi(generics.RetrieveAPIView):
     serializer_class = PublicSettingSerializer
 
     def get_object(self):
-        instance = {
+        return {
             "data": {
                 "WINDOWS_SKIP_ALL_MANUAL_PASSWORD": settings.WINDOWS_SKIP_ALL_MANUAL_PASSWORD,
                 "SECURITY_MAX_IDLE_TIME": settings.SECURITY_MAX_IDLE_TIME,
@@ -288,10 +283,9 @@ class PublicSettingApi(generics.RetrieveAPIView):
                     'SECURITY_PASSWORD_LOWER_CASE': settings.SECURITY_PASSWORD_LOWER_CASE,
                     'SECURITY_PASSWORD_NUMBER': settings.SECURITY_PASSWORD_NUMBER,
                     'SECURITY_PASSWORD_SPECIAL_CHAR': settings.SECURITY_PASSWORD_SPECIAL_CHAR,
-                }
+                },
             }
         }
-        return instance
 
 
 class SettingsApi(generics.RetrieveUpdateAPIView):

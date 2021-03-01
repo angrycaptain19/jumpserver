@@ -52,8 +52,7 @@ class Setting(models.Model):
     @classmethod
     def get_from_cache(cls, item):
         key = cls.cache_key_prefix + item
-        cached = cache.get(key)
-        return cached
+        return cache.get(key)
 
     @property
     def cleaned_value(self):

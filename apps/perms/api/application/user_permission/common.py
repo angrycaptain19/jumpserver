@@ -36,9 +36,8 @@ class GrantedApplicationSystemUsersMixin(ListAPIView):
         application_id = self.kwargs.get('application_id')
         application = get_object_or_404(Application, id=application_id)
         system_users_id = self.get_application_system_users_id(application)
-        system_users = SystemUser.objects.filter(id__in=system_users_id)\
+        return SystemUser.objects.filter(id__in=system_users_id)\
             .only(*self.only_fields).order_by('priority')
-        return system_users
 
 
 class UserGrantedApplicationSystemUsersApi(ForAdminMixin, GrantedApplicationSystemUsersMixin):

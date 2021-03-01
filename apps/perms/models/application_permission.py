@@ -67,7 +67,6 @@ class ApplicationPermission(BasePermission):
     def get_all_users(self):
         users_id = self.users.all().values_list('id', flat=True)
         user_groups_id = self.user_groups.all().values_list('id', flat=True)
-        users = User.objects.filter(
+        return User.objects.filter(
             Q(id__in=users_id) | Q(groups__id__in=user_groups_id)
         )
-        return users

@@ -20,10 +20,7 @@ class CommandStore(CommandBase):
         return sorted(queryset, key=lambda command: command.timestamp, reverse=True)
 
     def count(self, **kwargs):
-        amount = 0
-        for storage in self.storage_list:
-            amount += storage.count(**kwargs)
-        return amount
+        return sum(storage.count(**kwargs) for storage in self.storage_list)
 
     def save(self, command):
         pass

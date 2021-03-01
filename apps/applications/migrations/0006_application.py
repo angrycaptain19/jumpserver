@@ -19,14 +19,13 @@ CATEGORY_LIST = [CATEGORY_DB, CATEGORY_REMOTE, CATEGORY_CLOUD]
 def get_application_category(old_app):
     _type = old_app.type
     if _type in CATEGORY_DB_LIST:
-        category = CATEGORY_DB
+        return CATEGORY_DB
     elif _type in CATEGORY_REMOTE_LIST:
-        category = CATEGORY_REMOTE
+        return CATEGORY_REMOTE
     elif _type in CATEGORY_CLOUD_LIST:
-        category = CATEGORY_CLOUD
+        return CATEGORY_CLOUD
     else:
-        category = None
-    return category
+        return None
 
 
 def common_to_application_json(old_app):

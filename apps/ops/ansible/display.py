@@ -34,11 +34,7 @@ class AdHocDisplay(Display, metaclass=UnSingleton):
         return
 
     def _write_to_screen(self, msg, stderr):
-        if not stderr:
-            screen = sys.stdout
-        else:
-            screen = sys.stderr
-
+        screen = sys.stdout if not stderr else sys.stderr
         screen.write(msg)
 
         try:
@@ -57,10 +53,6 @@ class AdHocDisplay(Display, metaclass=UnSingleton):
         if color:
             msg = stringc(msg, color)
 
-        if not msg.endswith(u'\n'):
-            msg2 = msg + u'\n'
-        else:
-            msg2 = msg
-
+        msg2 = msg + u'\n' if not msg.endswith(u'\n') else msg
         self._write_to_screen(msg2, stderr)
         self._write_to_log_file(msg2)

@@ -145,16 +145,11 @@ class NodeChildrenApi(generics.ListCreateAPIView):
         if not self.instance:
             return Node.objects.none()
 
-        if self.is_initial:
-            with_self = True
-        else:
-            with_self = False
-
+        with_self = bool(self.is_initial)
         if query_all:
-            queryset = self.instance.get_all_children(with_self=with_self)
+            return self.instance.get_all_children(with_self=with_self)
         else:
-            queryset = self.instance.get_children(with_self=with_self)
-        return queryset
+            return self.instance.get_children(with_self=with_self)
 
 
 class NodeChildrenAsTreeApi(SerializeToTreeNodeMixin, NodeChildrenApi):
@@ -280,10 +275,18 @@ class MoveAssetsToNodeApi(generics.UpdateAPIView):
             asset_mapper = {asset.id: asset for asset in assets}
 
             # 创建删除关系信号发送函数
-            senders = []
-            for asset_id, node_id_set in asset_nodes_mapper.items():
-                senders.append(partial(m2m_changed.send, sender=m2m_model, instance=asset_mapper[asset_id],
-                                       reverse=False, model=Node, pk_set=node_id_set))
+            senders = [
+                partial(
+                    m2m_changed.send,
+                    sender=m2m_model,
+                    instance=asset_mapper[asset_id],
+                    reverse=False,
+                    model=Node,
+                    pk_set=node_id_set,
+                )
+                for asset_id, node_id_set in asset_nodes_mapper.items()
+            ]
+
             # 发送 pre 信号
             [sender(action=PRE_REMOVE) for sender in senders]
             num = len(relates)
@@ -303,8 +306,7 @@ class NodeTaskCreateApi(generics.CreateAPIView):
 
     def get_object(self):
         node_id = self.kwargs.get('pk')
-        node = get_object_or_none(self.model, id=node_id)
-        return node
+        return get_object_or_none(self.model, id=node_id)
 
     @staticmethod
     def set_serializer_data(s, task):
@@ -315,8 +317,7 @@ class NodeTaskCreateApi(generics.CreateAPIView):
     @staticmethod
     def refresh_nodes_cache():
         Task = namedtuple('Task', ['id'])
-        task = Task(id="0")
-        return task
+        return Task(id="0")
 
     def perform_create(self, serializer):
         action = serializer.validated_data["action"]

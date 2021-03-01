@@ -32,9 +32,7 @@ class TreeNode:
         parent = self.get_parent()
         if parent == self._tree.root:
             return []
-        parents = [parent]
-        parents.extend(parent.get_parents())
-        return parents
+        return [parent, *parent.get_parents()]
 
     def add_child(self, child):
         self._tree.add_node(child, self)
@@ -46,16 +44,15 @@ class TreeNode:
 
     def __gt__(self, other):
         if self.isParent and not other.isParent:
-            result = False
+            return False
         elif not self.isParent and other.isParent:
-            result = True
+            return True
         elif self.pId != other.pId:
-            result = self.pId > other.pId
+            return self.pId > other.pId
         elif str(self.id).startswith('-') and not str(other.id).startswith('-'):
-            result = False
+            return False
         else:
-            result = self.name > other.name
-        return result
+            return self.name > other.name
 
     def __le__(self, other):
         return not self.__gt__(other)

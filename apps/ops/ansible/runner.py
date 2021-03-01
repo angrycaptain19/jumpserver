@@ -38,7 +38,7 @@ Options = namedtuple('Options', [
 
 
 def get_default_options():
-    options = dict(
+    return dict(
         syntax=False,
         timeout=30,
         connection='ssh',
@@ -54,7 +54,6 @@ def get_default_options():
         gathering='implicit',
         remote_tmp='/tmp/.ansible'
     )
-    return options
 
 
 # JumpServer not use playbook
@@ -163,9 +162,7 @@ class AdHocRunner:
                 args = {'executable': executable, '_raw_params':  command}
             else:
                 args = {'_raw_params':  args}
-            return args
-        else:
-            return args
+        return args
 
     def clean_tasks(self, tasks):
         cleaned_tasks = []

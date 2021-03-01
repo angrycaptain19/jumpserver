@@ -26,10 +26,7 @@ class OrgManager(models.Manager):
         orgs.append(Organization.default())
         querysets = {}
         for org in orgs:
-            if org.is_real():
-                org_id = org.id
-            else:
-                org_id = ''
+            org_id = org.id if org.is_real() else ''
             querysets[org] = super(OrgManager, self).get_queryset().filter(org_id=org_id)
         return querysets
 
@@ -38,11 +35,11 @@ class OrgManager(models.Manager):
         return filter_org_queryset(queryset)
 
     def all(self):
-        if not current_org:
-            msg = 'You can `objects.set_current_org(org).all()` then run it'
-            return self
-        else:
+        if current_org:
             return super(OrgManager, self).all()
+
+        msg = 'You can `objects.set_current_org(org).all()` then run it'
+        return self
 
     def set_current_org(self, org):
         if isinstance(org, str):

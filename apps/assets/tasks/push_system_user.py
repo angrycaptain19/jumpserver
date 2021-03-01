@@ -28,7 +28,7 @@ def _split_by_comma(raw: str):
 
 
 def _dump_args(args: dict):
-    return ' '.join([f'{k}={v}' for k, v in args.items() if v is not Empty])
+    return ' '.join(f'{k}={v}' for k, v in args.items() if v is not Empty)
 
 
 def get_push_unixlike_system_user_tasks(system_user, username=None):
@@ -111,9 +111,7 @@ def get_push_unixlike_system_user_tasks(system_user, username=None):
     if system_user.sudo:
         sudo = system_user.sudo.replace('\r\n', '\n').replace('\r', '\n')
         sudo_list = sudo.split('\n')
-        sudo_tmp = []
-        for s in sudo_list:
-            sudo_tmp.append(s.strip(','))
+        sudo_tmp = [s.strip(',') for s in sudo_list]
         sudo = ','.join(sudo_tmp)
         tasks.append({
             'name': 'Set {} sudo setting'.format(username),

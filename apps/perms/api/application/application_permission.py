@@ -19,10 +19,9 @@ class ApplicationPermissionViewSet(BasePermissionViewSet):
     ]
 
     def get_queryset(self):
-        queryset = super().get_queryset().prefetch_related(
+        return super().get_queryset().prefetch_related(
             "applications", "users", "user_groups", "system_users"
         )
-        return queryset
 
     def filter_application(self, queryset):
         application_id = self.request.query_params.get('application_id')

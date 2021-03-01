@@ -57,9 +57,7 @@ class OrgBulkModelViewSet(CommonApiMixin, OrgQuerySetMixin, BulkModelViewSet):
             return True
         if qs_count > filtered_count:
             return True
-        if self.request.query_params.get('spm', ''):
-            return True
-        return False
+        return bool(self.request.query_params.get('spm', ''))
 
 
 class OrgMembershipModelViewSetMixin:
@@ -79,8 +77,7 @@ class OrgMembershipModelViewSetMixin:
         return context
 
     def get_queryset(self):
-        queryset = self.membership_class.objects.filter(organization=self.org)
-        return queryset
+        return self.membership_class.objects.filter(organization=self.org)
 
 
 class OrgRelationMixin(RelationMixin):

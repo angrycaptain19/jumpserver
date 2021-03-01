@@ -25,8 +25,7 @@ def rsa_encrypt(message, rsa_public_key):
     """ 加密登录密码 """
     key = RSA.importKey(rsa_public_key)
     cipher = PKCS1_v1_5.new(key)
-    cipher_text = base64.b64encode(cipher.encrypt(message.encode())).decode()
-    return cipher_text
+    return base64.b64encode(cipher.encrypt(message.encode())).decode()
 
 
 def rsa_decrypt(cipher_text, rsa_private_key=None):
@@ -42,5 +41,4 @@ def rsa_decrypt(cipher_text, rsa_private_key=None):
     if len(cipher_decoded) == 127:
         hex_fixed = '00' + cipher_decoded.hex()
         cipher_decoded = base64.b16decode(hex_fixed.upper())
-    message = cipher.decrypt(cipher_decoded, b'error').decode()
-    return message
+    return cipher.decrypt(cipher_decoded, b'error').decode()

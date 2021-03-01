@@ -29,12 +29,9 @@ def test_asset_connectivity_util(assets, task_name=None):
     hosts = clean_ansible_task_hosts(assets)
     if not hosts:
         return {}
-    platform_hosts_map = {}
     hosts_sorted = sorted(hosts, key=group_asset_by_platform)
     platform_hosts = groupby(hosts_sorted, key=group_asset_by_platform)
-    for i in platform_hosts:
-        platform_hosts_map[i[0]] = list(i[1])
-
+    platform_hosts_map = {i[0]: list(i[1]) for i in platform_hosts}
     platform_tasks_map = {
         "unixlike": const.PING_UNIXLIKE_TASKS,
         "windows": const.PING_WINDOWS_TASKS
@@ -97,6 +94,5 @@ def test_assets_connectivity_manual(assets):
 def test_node_assets_connectivity_manual(node):
     task_name = _("Test if the assets under the node are connectable: {}".format(node.name))
     assets = node.get_all_assets()
-    result = test_asset_connectivity_util(assets, task_name=task_name)
-    return result
+    return test_asset_connectivity_util(assets, task_name=task_name)
 

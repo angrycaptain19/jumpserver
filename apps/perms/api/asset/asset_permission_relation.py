@@ -57,10 +57,9 @@ class AssetPermissionAllUserListApi(generics.ListAPIView):
     def get_queryset(self):
         pk = self.kwargs.get("pk")
         perm = get_object_or_404(models.AssetPermission, pk=pk)
-        users = perm.get_all_users().only(
+        return perm.get_all_users().only(
             *self.serializer_class.Meta.only_fields
         )
-        return users
 
 
 class AssetPermissionUserGroupRelationViewSet(RelationMixin):
@@ -111,8 +110,11 @@ class AssetPermissionAllAssetListApi(generics.ListAPIView):
             asset_q |= Q(nodes__key__startswith=f'{key}:')
             asset_q |= Q(nodes__key=key)
 
-        assets = Asset.objects.filter(asset_q).only(*self.serializer_class.Meta.only_fields).distinct()
-        return assets
+        return (
+            Asset.objects.filter(asset_q)
+            .only(*self.serializer_class.Meta.only_fields)
+            .distinct()
+        )
 
 
 class AssetPermissionNodeRelationViewSet(RelationMixin):

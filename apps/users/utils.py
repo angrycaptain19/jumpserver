@@ -49,8 +49,7 @@ def construct_user_created_email_body(user):
         custom_body = '<p style="text-indent:2em">' + settings.EMAIL_CUSTOM_USER_CREATED_BODY + '</p>'
     else:
         custom_body = ''
-    body = custom_body + default_body
-    return body
+    return custom_body + default_body
 
 
 def send_user_created_mail(user):
@@ -252,8 +251,7 @@ def redirect_user_first_login_or_index(request, redirect_field_name):
     url_in_post = request.POST.get(redirect_field_name)
     if url_in_post:
         return url_in_post
-    url_in_get = request.GET.get(redirect_field_name, reverse('index'))
-    return url_in_get
+    return request.GET.get(redirect_field_name, reverse('index'))
 
 
 def generate_otp_uri(username, otp_secret_key=None, issuer="JumpServer"):
@@ -316,8 +314,7 @@ def increase_login_failed_count(username, ip):
 
 def get_login_failed_count(username, ip):
     key_limit = key_prefix_limit.format(username, ip)
-    count = cache.get(key_limit, 0)
-    return count
+    return cache.get(key_limit, 0)
 
 
 def clean_failed_count(username, ip):
@@ -341,9 +338,7 @@ def is_block_login(username, ip):
 
 
 def is_need_unblock(key_block):
-    if not cache.get(key_block):
-        return False
-    return True
+    return bool(cache.get(key_block))
 
 
 def construct_user_email(username, email):
@@ -377,7 +372,7 @@ def get_source_choices():
 
 
 def is_auth_time_valid(session, key):
-    return True if session.get(key, 0) > time.time() else False
+    return session.get(key, 0) > time.time()
 
 
 def is_auth_password_time_valid(session):

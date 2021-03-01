@@ -91,8 +91,7 @@ class CeleryTaskLoggerHandler(StreamHandler):
     def get_current_task_id():
         if not current_task:
             return
-        task_id = current_task.request.root_id
-        return task_id
+        return current_task.request.root_id
 
     def on_task_start(self, sender, task_id, **kwargs):
         return self.handle_task_start(task_id)

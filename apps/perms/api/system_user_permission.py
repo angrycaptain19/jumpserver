@@ -16,9 +16,7 @@ class SystemUserPermission(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
 
-        queryset = SystemUser.objects.filter(
+        return SystemUser.objects.filter(
             Q(granted_by_permissions__users=user) |
             Q(granted_by_permissions__user_groups__users=user)
         ).distinct()
-
-        return queryset

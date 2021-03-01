@@ -140,10 +140,9 @@ class ReplayStorageSerializer(serializers.ModelSerializer):
             serializer_class = default_serializer
 
         if isinstance(serializer_class, type):
-            serializer = serializer_class()
+            return serializer_class()
         else:
-            serializer = serializer_class
-        return serializer
+            return serializer_class
 
 
 # Command storage serializers
@@ -222,7 +221,6 @@ class CommandStorageSerializer(serializers.ModelSerializer):
             serializer_class = default_serializer
 
         if isinstance(serializer_class, type):
-            serializer = serializer_class()
+            return serializer_class()
         else:
-            serializer = serializer_class
-        return serializer
+            return serializer_class

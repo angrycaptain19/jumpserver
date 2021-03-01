@@ -149,8 +149,7 @@ class Ticket(CommonModelMixin, OrgModelMixin):
     @classmethod
     def get_user_related_tickets(cls, user):
         queries = Q(applicant=user) | Q(assignees=user)
-        tickets = cls.all().filter(queries).distinct()
-        return tickets
+        return cls.all().filter(queries).distinct()
 
     @classmethod
     def all(cls):
@@ -169,5 +168,4 @@ class Ticket(CommonModelMixin, OrgModelMixin):
     # body
     @property
     def body(self):
-        _body = self.handler.get_body()
-        return _body
+        return self.handler.get_body()

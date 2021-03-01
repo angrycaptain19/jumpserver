@@ -53,7 +53,6 @@ def get_node(request):
         return None
 
     if is_uuid(node_id):
-        node = get_object_or_none(Node, id=node_id)
+        return get_object_or_none(Node, id=node_id)
     else:
-        node = get_object_or_none(Node, key=node_id)
-    return node
+        return get_object_or_none(Node, key=node_id)

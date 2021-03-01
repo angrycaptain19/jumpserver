@@ -13,14 +13,12 @@ def migrate_terminal_type(apps, schema_editor):
     terminals = terminal_model.objects.using(db_alias).all()
     for terminal in terminals:
         name = terminal.name.lower()
-        if 'koko' in name:
+        if 'koko' in name or 'gua' not in name and 'omnidb' not in name:
             _type = TERMINAL_TYPE_KOKO
         elif 'gua' in name:
             _type = TERMINAL_TYPE_GUACAMOLE
-        elif 'omnidb' in name:
-            _type = TERMINAL_TYPE_OMNIDB
         else:
-            _type = TERMINAL_TYPE_KOKO
+            _type = TERMINAL_TYPE_OMNIDB
         terminal.type = _type
     terminal_model.objects.bulk_update(terminals, ['type'])
 

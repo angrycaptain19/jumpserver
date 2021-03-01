@@ -8,7 +8,7 @@ def get_node_ancestor_keys(key, with_self=False):
     key_list = key.split(":")
     if not with_self:
         key_list.pop()
-    for i in range(len(key_list)):
+    for _ in range(len(key_list)):
         parent_keys.append(":".join(key_list))
         key_list.pop()
     return parent_keys

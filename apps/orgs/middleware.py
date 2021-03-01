@@ -35,5 +35,4 @@ class OrgMiddleware:
         org = get_org_from_request(request)
         request.current_org = org
         set_current_org(org)
-        response = self.get_response(request)
-        return response
+        return self.get_response(request)

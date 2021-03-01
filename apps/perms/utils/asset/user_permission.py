@@ -287,8 +287,7 @@ def get_user_granted_nodes_list_via_mapping_node(user):
         for node in descendant_nodes:
             key_to_node_mapper[node.key] = node
 
-    all_nodes = key_to_node_mapper.values()
-    return all_nodes
+    return key_to_node_mapper.values()
 
 
 def get_user_granted_all_assets(
@@ -354,9 +353,10 @@ def get_node_all_granted_assets(user: User, key):
     ).filter(Q(key__startswith=f'{key}:') | Q(key=key))
 
     # 根据资产授权节点构建查询
-    only_asset_granted_nodes_qs = []
-    for _node in only_asset_granted_mapping_nodes:
-        only_asset_granted_nodes_qs.append(Q(nodes__id=_node.node_id))
+    only_asset_granted_nodes_qs = [
+        Q(nodes__id=_node.node_id)
+        for _node in only_asset_granted_mapping_nodes
+    ]
 
     q = []
     if granted_nodes_qs:
@@ -413,14 +413,12 @@ def get_node_all_granted_assets_from_perm(user: User, key, asset_perms_id=None):
 
     node_ids = get_direct_granted_node_ids(user, key, asset_perms_id)
     q |= Q(nodes__id__in=node_ids)
-    asset_qs = Asset.objects.filter(q).distinct()
-    return asset_qs
+    return Asset.objects.filter(q).distinct()
 
 
 def get_direct_granted_node_assets_from_perm(user: User, key, asset_perms_id=None):
     node_ids = get_direct_granted_node_ids(user, key, asset_perms_id)
-    asset_qs = Asset.objects.filter(nodes__id__in=node_ids).distinct()
-    return asset_qs
+    return Asset.objects.filter(nodes__id__in=node_ids).distinct()
 
 
 def count_node_all_granted_assets(user: User, key, asset_perms_id=None):
@@ -474,15 +472,15 @@ def get_user_all_assetpermissions_id(user: User):
 def get_user_direct_granted_assets(user, asset_perms_id=None):
     if asset_perms_id is None:
         asset_perms_id = get_user_all_assetpermissions_id(user)
-    assets = Asset.org_objects.filter(granted_by_permissions__id__in=asset_perms_id).distinct()
-    return assets
+    return Asset.org_objects.filter(
+        granted_by_permissions__id__in=asset_perms_id
+    ).distinct()
 
 
 def count_user_direct_granted_assets(user, asset_perms_id=None):
-    count = get_user_direct_granted_assets(
+    return get_user_direct_granted_assets(
         user, asset_perms_id=asset_perms_id
     ).values_list('id').count()
-    return count
 
 
 def get_ungrouped_node(user, asset_perms_id=None):

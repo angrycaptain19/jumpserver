@@ -67,8 +67,7 @@ class AuthBook(BaseUser):
                 'version': max_version + 1,
                 'is_latest': True
             })
-            obj = cls.objects.create(**kwargs)
-            return obj
+            return cls.objects.create(**kwargs)
 
     @property
     def connectivity(self):

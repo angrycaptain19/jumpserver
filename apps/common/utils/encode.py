@@ -34,9 +34,7 @@ class Singleton(type):
     def __call__(cls, *args, **kwargs):
         if cls.__instance is None:
             cls.__instance = super().__call__(*args, **kwargs)
-            return cls.__instance
-        else:
-            return cls.__instance
+        return cls.__instance
 
 
 class Signer(metaclass=Singleton):
@@ -91,13 +89,12 @@ def ssh_pubkey_gen(private_key=None, username='jumpserver', hostname='localhost'
     if not isinstance(private_key, (paramiko.RSAKey, paramiko.DSSKey)):
         raise IOError('Invalid private key')
 
-    public_key = "%(key_type)s %(key_content)s %(username)s@%(hostname)s" % {
+    return "%(key_type)s %(key_content)s %(username)s@%(hostname)s" % {
         'key_type': private_key.get_name(),
         'key_content': private_key.get_base64(),
         'username': username,
         'hostname': hostname,
     }
-    return public_key
 
 
 def ssh_key_gen(length=2048, type='rsa', password=None, username='jumpserver', hostname=None):
@@ -134,10 +131,7 @@ def validate_ssh_private_key(text, password=None):
             return False
 
     key = ssh_key_string_to_obj(text, password=password)
-    if key is None:
-        return False
-    else:
-        return True
+    return key is not None
 
 
 def validate_ssh_public_key(text):
@@ -184,8 +178,7 @@ def encrypt_password(password, salt=None):
 
 
 def get_signer():
-    s = Signer(settings.SECRET_KEY)
-    return s
+    return Signer(settings.SECRET_KEY)
 
 
 signer = get_signer()

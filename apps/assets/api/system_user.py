@@ -89,18 +89,15 @@ class SystemUserTaskApi(generics.CreateAPIView):
 
     def do_push(self, system_user, assets_id=None):
         if assets_id is None:
-            task = push_system_user_to_assets_manual.delay(system_user)
-        else:
-            username = self.request.query_params.get('username')
-            task = push_system_user_to_assets.delay(
+            return push_system_user_to_assets_manual.delay(system_user)
+        username = self.request.query_params.get('username')
+        return push_system_user_to_assets.delay(
                 system_user.id, assets_id, username=username
             )
-        return task
 
     @staticmethod
     def do_test(system_user):
-        task = test_system_user_connectivity_manual.delay(system_user)
-        return task
+        return test_system_user_connectivity_manual.delay(system_user)
 
     def get_object(self):
         pk = self.kwargs.get('pk')
@@ -115,7 +112,7 @@ class SystemUserTaskApi(generics.CreateAPIView):
         if action == 'push':
             assets = [asset] if asset else assets
             assets_id = [asset.id for asset in assets]
-            assets_id = assets_id if assets_id else None
+            assets_id = assets_id or None
             task = self.do_push(system_user, assets_id)
         else:
             task = self.do_test(system_user)

@@ -34,8 +34,7 @@ def default_cluster():
 def default_node():
     try:
         from .node import Node
-        root = Node.org_root()
-        return root
+        return Node.org_root()
     except:
         return None
 
@@ -290,10 +289,9 @@ class Asset(ProtocolsMixin, NodesRelationMixin, OrgModelMixin):
             return self._connectivity
         if not self.admin_user_username:
             return Connectivity.unknown()
-        connectivity = ConnectivityMixin.get_asset_username_connectivity(
+        return ConnectivityMixin.get_asset_username_connectivity(
             self, self.admin_user_username
         )
-        return connectivity
 
     @connectivity.setter
     def connectivity(self, value):
@@ -306,18 +304,14 @@ class Asset(ProtocolsMixin, NodesRelationMixin, OrgModelMixin):
             return {}
 
         self.admin_user.load_asset_special_auth(self)
-        info = {
+        return {
             'username': self.admin_user.username,
             'password': self.admin_user.password,
             'private_key': self.admin_user.private_key_file,
         }
-        return info
 
     def nodes_display(self):
-        names = []
-        for n in self.nodes.all():
-            names.append(n.full_value)
-        return names
+        return [n.full_value for n in self.nodes.all()]
 
     def as_node(self):
         from .node import Node
@@ -355,8 +349,7 @@ class Asset(ProtocolsMixin, NodesRelationMixin, OrgModelMixin):
                 }
             }
         }
-        tree_node = TreeNode(**data)
-        return tree_node
+        return TreeNode(**data)
 
     class Meta:
         unique_together = [('org_id', 'hostname')]

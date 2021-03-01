@@ -52,12 +52,11 @@ class BearerTokenSerializer(serializers.Serializer):
                     "user id {} not exist".format(user_id)
                 )
         token, date_expired = user.create_bearer_token(request)
-        instance = {
+        return {
             "token": token,
             "date_expired": date_expired,
             "user": user
         }
-        return instance
 
 
 class MFAChallengeSerializer(serializers.Serializer):

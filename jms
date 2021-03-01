@@ -74,7 +74,7 @@ except:
 
 def check_database_connection():
     os.chdir(os.path.join(BASE_DIR, 'apps'))
-    for i in range(60):
+    for _ in range(60):
         logging.info("Check database connection ...")
         code = subprocess.call("python manage.py showmigrations users ", shell=True)
         if code == 0:
@@ -439,7 +439,7 @@ def get_daemon_context():
     daemon_pid_file = get_pid_file_path('jms')
     daemon_log_f = open(get_log_file_path('jms'), 'a')
     files_preserve.append(daemon_log_f)
-    context = daemon.DaemonContext(
+    return daemon.DaemonContext(
         pidfile=pidfile.TimeoutPIDLockFile(daemon_pid_file),
         signal_map={
             signal.SIGTERM: lambda x, y: clean_up(),
@@ -450,7 +450,6 @@ def get_daemon_context():
         files_preserve=files_preserve,
         detach_process=True,
     )
-    return context
 
 
 def stop_service(srv, sig=15):

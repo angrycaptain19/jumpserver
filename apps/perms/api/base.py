@@ -21,15 +21,11 @@ class BasePermissionViewSet(OrgBulkModelViewSet):
         if valid_query is None:
             return queryset
         invalid = valid_query in ['0', 'N', 'false', 'False']
-        if invalid:
-            queryset = queryset.invalid()
-        else:
-            queryset = queryset.valid()
+        queryset = queryset.invalid() if invalid else queryset.valid()
         return queryset
 
     def is_query_all(self):
-        query_all = self.request.query_params.get('all', '1') == '1'
-        return query_all
+        return self.request.query_params.get('all', '1') == '1'
 
     def filter_user(self, queryset):
         user_id = self.request.query_params.get('user_id')

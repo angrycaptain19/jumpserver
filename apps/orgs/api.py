@@ -43,10 +43,12 @@ class OrgViewSet(BulkModelViewSet):
 
     def get_data_from_model(self, model):
         if model == User:
-            data = model.objects.filter(orgs__id=self.org.id, m2m_org_members__role=ROLE.USER)
+            return model.objects.filter(
+                orgs__id=self.org.id, m2m_org_members__role=ROLE.USER
+            )
+
         else:
-            data = model.objects.filter(org_id=self.org.id)
-        return data
+            return model.objects.filter(org_id=self.org.id)
 
     def destroy(self, request, *args, **kwargs):
         self.org = self.get_object()

@@ -51,14 +51,13 @@ class AdminUser(BaseUser):
     @property
     def become_info(self):
         if self.become:
-            info = {
+            return {
                 "method": self.become_method,
                 "user": self.become_user,
                 "pass": self.become_pass,
             }
         else:
-            info = None
-        return info
+            return None
 
     class Meta:
         ordering = ['name']
@@ -151,10 +150,10 @@ class SystemUser(BaseUser):
         return self.get_login_mode_display()
 
     def is_need_push(self):
-        if self.auto_push and self.protocol in [self.PROTOCOL_SSH, self.PROTOCOL_RDP]:
-            return True
-        else:
-            return False
+        return bool(
+            self.auto_push
+            and self.protocol in [self.PROTOCOL_SSH, self.PROTOCOL_RDP]
+        )
 
     @property
     def is_need_cmd_filter(self):
@@ -181,10 +180,9 @@ class SystemUser(BaseUser):
     @property
     def cmd_filter_rules(self):
         from .cmd_filter import CommandFilterRule
-        rules = CommandFilterRule.objects.filter(
+        return CommandFilterRule.objects.filter(
             filter__in=self.cmd_filters.all()
         ).distinct()
-        return rules
 
     def is_command_can_run(self, command):
         for rule in self.cmd_filter_rules:
@@ -201,19 +199,17 @@ class SystemUser(BaseUser):
         assets_ids = set(self.assets.all().values_list('id', flat=True))
         nodes_assets_ids = Node.get_nodes_all_assets_ids(nodes_keys)
         assets_ids.update(nodes_assets_ids)
-        assets = Asset.objects.filter(id__in=assets_ids)
-        return assets
+        return Asset.objects.filter(id__in=assets_ids)
 
     @classmethod
     def get_protocol_by_application_type(cls, app_type):
         from applications.const import ApplicationTypeChoices
         if app_type in cls.APPLICATION_CATEGORY_PROTOCOLS:
-            protocol = app_type
+            return app_type
         elif app_type in ApplicationTypeChoices.remote_app_types():
-            protocol = cls.PROTOCOL_RDP
+            return cls.PROTOCOL_RDP
         else:
-            protocol = None
-        return protocol
+            return None
 
     class Meta:
         ordering = ['name']

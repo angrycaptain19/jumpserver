@@ -18,12 +18,14 @@ class CustomSwaggerAutoSchema(SwaggerAutoSchema):
             action = self.view.action
             if action == "bulk_destroy":
                 action = "bulk_delete"
-        if dump_keys[-2] == "children":
-            if self.path.find('id') < 0:
-                dump_keys.insert(-2, "root")
-        if dump_keys[0] == "perms" and dump_keys[1] == "users":
-            if self.path.find('{id}') < 0:
-                dump_keys.insert(2, "my")
+        if dump_keys[-2] == "children" and self.path.find('id') < 0:
+            dump_keys.insert(-2, "root")
+        if (
+            dump_keys[0] == "perms"
+            and dump_keys[1] == "users"
+            and self.path.find('{id}') < 0
+        ):
+            dump_keys.insert(2, "my")
         if action.replace('bulk_', '') == dump_keys[-1]:
             dump_keys[-1] = action
         return super().get_operation_id(tuple(dump_keys))
@@ -70,14 +72,10 @@ def get_swagger_view(version='v1'):
         path('api/v2/', include(api_v2))
     ]
 
-    if version == "v2":
-        patterns = api_v2_patterns
-    else:
-        patterns = api_v1_patterns
-    schema_view = get_schema_view(
+    patterns = api_v2_patterns if version == "v2" else api_v1_patterns
+    return get_schema_view(
         api_info,
         patterns=patterns,
         permission_classes=(permissions.IsAuthenticated,),
     )
-    return schema_view
 

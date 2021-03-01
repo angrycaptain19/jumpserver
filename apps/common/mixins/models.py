@@ -62,7 +62,6 @@ class DebugQueryManager(models.Manager):
         for line in lines[-10:-1]:
             print(line)
         print("<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
-        queryset = super().get_queryset()
-        return queryset
+        return super().get_queryset()
 
 

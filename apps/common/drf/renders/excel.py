@@ -27,5 +27,4 @@ class ExcelFileRenderer(BaseFileRenderer):
             self.ws.cell(row=self.row_count, column=column_count, value=cell_value)
 
     def get_rendered_value(self):
-        value = save_virtual_workbook(self.wb)
-        return value
+        return save_virtual_workbook(self.wb)

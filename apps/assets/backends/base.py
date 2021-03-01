@@ -29,7 +29,7 @@ class BaseBackend:
 
     @staticmethod
     def qs_to_values(qs):
-        values = qs.values(
+        return qs.values(
             'hostname', 'ip', "asset_id",
             'username', 'password', 'private_key', 'public_key',
             'score', 'version',
@@ -37,7 +37,6 @@ class BaseBackend:
             'date_created', 'date_updated',
             'org_id', 'backend',
         )
-        return values
 
     @staticmethod
     def make_assets_as_id(assets):

@@ -103,10 +103,9 @@ class FamilyMixin:
             child_key = self.get_next_child_key()
             if value is None:
                 value = child_key
-            child = self.__class__.objects.create(
+            return self.__class__.objects.create(
                 id=_id, key=child_key, value=value
             )
-            return child
 
     def get_or_create_child(self, value, _id=None):
         """
@@ -157,7 +156,7 @@ class FamilyMixin:
         key_list = key.split(":")
         if not with_self:
             key_list.pop()
-        for i in range(len(key_list)):
+        for _ in range(len(key_list)):
             parent_keys.append(":".join(key_list))
             key_list.pop()
         return parent_keys
@@ -266,10 +265,9 @@ class NodeAssetsMixin:
             Q(key__startswith=f'{key}:') |
             Q(key=key)
         ).values_list('id', flat=True).distinct()
-        assets = Asset.objects.filter(
+        return Asset.objects.filter(
             nodes__id__in=list(node_ids)
         ).distinct()
-        return assets
 
     def get_assets(self):
         from .asset import Asset
@@ -284,8 +282,7 @@ class NodeAssetsMixin:
 
     @classmethod
     def get_nodes_all_assets_ids(cls, nodes_keys):
-        assets_ids = cls.get_nodes_all_assets(nodes_keys).values_list('id', flat=True)
-        return assets_ids
+        return cls.get_nodes_all_assets(nodes_keys).values_list('id', flat=True)
 
     @classmethod
     def get_nodes_all_assets(cls, nodes_keys, extra_assets_ids=None):
@@ -335,10 +332,7 @@ class SomeNodesMixin:
         return self.key == self.default_key
 
     def is_org_root(self):
-        if self.key.isdigit():
-            return True
-        else:
-            return False
+        return bool(self.key.isdigit())
 
     @classmethod
     def get_next_org_root_node_key(cls):
@@ -347,9 +341,8 @@ class SomeNodesMixin:
             org_nodes_roots_keys = org_nodes_roots.values_list('key', flat=True)
             if not org_nodes_roots_keys:
                 org_nodes_roots_keys = ['1']
-            max_key = max([int(k) for k in org_nodes_roots_keys])
-            key = str(max_key + 1) if max_key != 0 else '2'
-            return key
+            max_key = max(int(k) for k in org_nodes_roots_keys)
+            return str(max_key + 1) if max_key != 0 else '2'
 
     @classmethod
     def create_org_root_node(cls):
@@ -359,8 +352,7 @@ class SomeNodesMixin:
             if not ori_org.is_real():
                 return cls.default_node()
             key = cls.get_next_org_root_node_key()
-            root = cls.objects.create(key=key, value=ori_org.name)
-            return root
+            return cls.objects.create(key=key, value=ori_org.name)
 
     @classmethod
     def org_root(cls):
@@ -485,13 +477,10 @@ class Node(OrgModelMixin, SomeNodesMixin, FamilyMixin, NodeAssetsMixin):
                 'type': 'node'
             }
         }
-        tree_node = TreeNode(**data)
-        return tree_node
+        return TreeNode(**data)
 
     def has_children_or_has_assets(self):
-        if self.children or self.get_assets().exists():
-            return True
-        return False
+        return bool(self.children or self.get_assets().exists())
 
     def delete(self, using=None, keep_parents=False):
         if self.has_children_or_has_assets():

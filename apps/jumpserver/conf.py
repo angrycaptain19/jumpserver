@@ -48,10 +48,7 @@ def is_absolute_uri(uri):
         return False
 
     result = re.match(r'^http[s]?://.*', uri)
-    if result is None:
-        return False
-
-    return True
+    return result is not None
 
 
 def build_absolute_uri(base, uri):
@@ -372,10 +369,7 @@ class Config(dict):
         tp = type(default_value)
         # 对bool特殊处理
         if tp is bool and isinstance(v, str):
-            if v.lower() in ("true", "1"):
-                return True
-            else:
-                return False
+            return v.lower() in ("true", "1")
         if tp in [list, dict] and isinstance(v, str):
             try:
                 v = json.loads(v)
@@ -384,10 +378,7 @@ class Config(dict):
                 return v
 
         try:
-            if tp in [list, dict]:
-                v = json.loads(v)
-            else:
-                v = tp(v)
+            v = json.loads(v) if tp in [list, dict] else tp(v)
         except Exception:
             pass
         return v
@@ -678,9 +669,11 @@ class ConfigManager:
             root_path = PROJECT_DIR
 
         manager = cls(root_path=root_path)
-        if manager.load_from_object():
-            config = manager.config
-        elif manager.load_from_yml():
+        if (
+            manager.load_from_object()
+            or not manager.load_from_object()
+            and manager.load_from_yml()
+        ):
             config = manager.config
         else:
             msg = """

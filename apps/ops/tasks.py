@@ -136,10 +136,10 @@ def check_server_performance_period():
     uncheck_paths = ['/etc', '/boot']
 
     for path, usage in usages.items():
-        need_check = True
-        for uncheck_path in uncheck_paths:
-            if path.startswith(uncheck_path):
-                need_check = False
+        need_check = not any(
+            path.startswith(uncheck_path) for uncheck_path in uncheck_paths
+        )
+
         if need_check and usage.percent > 80:
             send_server_performance_mail(path, usage, usages)
 
@@ -175,9 +175,7 @@ def add_m(x):
     from celery import chain
     a = range(x)
     b = [a[i:i + 10] for i in range(0, len(a), 10)]
-    s = list()
-    s.append(add.s(b[0], b[1]))
+    s = [add.s(b[0], b[1])]
     for i in b[1:]:
         s.append(add.s(i))
-    res = chain(*tuple(s))()
-    return res
+    return chain(*tuple(s))()

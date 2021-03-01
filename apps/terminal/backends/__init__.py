@@ -14,15 +14,13 @@ TYPE_ENGINE_MAPPING = {
 def get_command_storage():
     config = settings.COMMAND_STORAGE
     engine_class = import_module(config['ENGINE'])
-    storage = engine_class.CommandStore(config)
-    return storage
+    return engine_class.CommandStore(config)
 
 
 def get_server_replay_storage():
     from jms_storage import get_object_storage
     config = settings.SERVER_REPLAY_STORAGE
-    storage = get_object_storage(config)
-    return storage
+    return get_object_storage(config)
 
 
 def get_terminal_command_storages():
@@ -43,8 +41,7 @@ def get_terminal_command_storages():
 def get_multi_command_storage():
     from .command.multi import CommandStore
     storage_list = get_terminal_command_storages().values()
-    storage = CommandStore(storage_list)
-    return storage
+    return CommandStore(storage_list)
 
 
 class ServerReplayStorage(LazyObject):

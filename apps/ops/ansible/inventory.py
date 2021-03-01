@@ -118,11 +118,11 @@ class BaseInventory(InventoryManager):
 
     def get_or_create_group(self, name):
         group = self.get_group(name)
-        if not group:
-            self.add_group(name)
-            return self.get_or_create_group(name)
-        else:
+        if group:
             return group
+
+        self.add_group(name)
+        return self.get_or_create_group(name)
 
     def parse_groups(self):
         for g in self.group_list:

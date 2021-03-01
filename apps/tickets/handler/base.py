@@ -97,8 +97,7 @@ class BaseHandler(object):
         )
         if self.ticket.status_closed:
             basic_body += '''{}: {}'''.format(_('Ticket processor'), self.ticket.processor_display)
-        body = self.body_html_format.format(_("Ticket basic info"), basic_body)
-        return body
+        return self.body_html_format.format(_("Ticket basic info"), basic_body)
 
     def _construct_meta_body(self):
         body = ''
@@ -111,10 +110,12 @@ class BaseHandler(object):
 
     def _base_construct_meta_body_of_open(self):
         meta_body_of_open = getattr(self, '_construct_meta_body_of_open', lambda: 'No')()
-        body = self.body_html_format.format(_('Ticket applied info'), meta_body_of_open)
-        return body
+        return self.body_html_format.format(
+            _('Ticket applied info'), meta_body_of_open
+        )
 
     def _base_construct_meta_body_of_approve(self):
         meta_body_of_approve = getattr(self, '_construct_meta_body_of_approve', lambda: 'No')()
-        body = self.body_html_format.format(_('Ticket approved info'), meta_body_of_approve)
-        return body
+        return self.body_html_format.format(
+            _('Ticket approved info'), meta_body_of_approve
+        )

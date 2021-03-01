@@ -77,8 +77,6 @@ def time_util_with_seconds(date_from, date_to):
         return ''
     if not date_to:
         return ''
-        date_to = timezone.now()
-
     delta = date_to - date_from
     seconds = delta.seconds
     if seconds < 60:
@@ -91,18 +89,12 @@ def time_util_with_seconds(date_from, date_to):
 
 @register.filter
 def is_bool_field(field):
-    if isinstance(field, forms.BooleanField):
-        return True
-    else:
-        return False
+    return isinstance(field, forms.BooleanField)
 
 
 @register.filter
 def is_image_field(field):
-    if isinstance(field, forms.ImageField):
-        return True
-    else:
-        return False
+    return isinstance(field, forms.ImageField)
 
 
 @register.filter
@@ -122,9 +114,7 @@ def subtract(value, arg):
 
 @register.filter
 def state_show(state):
-    success = '<i class ="fa fa-check text-navy"> </i>'
-    failed = '<i class ="fa fa-times text-danger"> </i>'
     if state:
-        return success
+        return '<i class ="fa fa-check text-navy"> </i>'
     else:
-        return failed
+        return '<i class ="fa fa-times text-danger"> </i>'

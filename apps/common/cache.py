@@ -92,11 +92,10 @@ class Cache(metaclass=CacheBase):
             for field in fields:
                 assert field in self.field_desc_mapper, f'{field} is not a valid field'
                 field_descs.append(self.field_desc_mapper[field])
-        data = {
+        return {
             field_desc.field_name: field_desc.compute_value(self)
             for field_desc in field_descs
         }
-        return data
 
     def compute_and_set_all_data(self, computed_data: dict = None):
         """
@@ -167,8 +166,7 @@ class CacheValueDesc:
             return self
         if self.field_name not in instance.data:
             instance.refresh(self.field_name)
-        value = instance.data[self.field_name]
-        return value
+        return instance.data[self.field_name]
 
     def compute_value(self, instance: Cache):
         if self.field_type.queryset is not None:
